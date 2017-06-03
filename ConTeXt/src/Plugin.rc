@@ -23,7 +23,7 @@ VS_VERSION_INFO VERSIONINFO
         BLOCK "040904E4"
         {
             VALUE "FileVersion", ConTeXt_VERSION_STRING
-            VALUE "LegalCopyright", "?2013 - Birunthan Mohanathas"
+            VALUE "LegalCopyright", "?2017 - Jason Yu"
             VALUE "ProductVersion", ConTeXt_VERSION_STRING
         }
     }
