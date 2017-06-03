@@ -1,0 +1,45 @@
+﻿  WcharMbcsConverter.cpp
+  Tag.cpp
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\tag.cpp(79): error C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\tag.cpp(105): error C4996: 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::copy': Call to 'std::basic_string::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xstring(1808): note: see declaration of 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::copy'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\tag.cpp(125): error C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\tag.cpp(129): error C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\tag.cpp(133): error C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+  StdAfx.cpp
+  Plugin.cpp
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\plugin.cpp(312): error C4996: 'wcstombs': This function or variable may be unsafe. Consider using wcstombs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdlib.h(1008): note: see declaration of 'wcstombs'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\plugin.cpp(317): error C4996: 'wcstombs': This function or variable may be unsafe. Consider using wcstombs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdlib.h(1008): note: see declaration of 'wcstombs'
+  NppAllocator.cpp
+  NotepadPPU.cpp
+  MenuManager.cpp
+  Lexer.cpp
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\lexer.cpp(678): error C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(346): note: see declaration of 'strncpy'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\lexer.cpp(684): error C4996: 'wcsncpy': This function or variable may be unsafe. Consider using wcsncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstring.h(204): note: see declaration of 'wcsncpy'
+  DynamicIDManager.cpp
+  ConTeXtEditU.cpp
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\contexteditu.cpp(367): warning C4018: '<=': signed/unsigned mismatch
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\contexteditu.cpp(373): warning C4018: '<=': signed/unsigned mismatch
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\contexteditu.cpp(372): error C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\contexteditu.cpp(375): error C4996: 'wcsncpy': This function or variable may be unsafe. Consider using wcsncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstring.h(204): note: see declaration of 'wcsncpy'
+c:\users\jason\google drive\hamid_project\tmp\context\context\src\contexteditu.cpp(567): warning C4390: ';': empty controlled statement found; is this the intent?
+  ConfigFile.cpp
+  WordList.cxx
+c:\users\jason\google drive\hamid_project\tmp\context\thirdparty\scintilla\lexlib\wordlist.cxx(102): error C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+  LexerBase.cxx
+c:\users\jason\google drive\hamid_project\tmp\context\thirdparty\scintilla\lexlib\lexerbase.cxx : fatal error C1041: cannot open program database 'C:\Users\Jason\Google Drive\Hamid_project\tmp\ConTeXt\Debug\Obj\ConTeXt\vc140.idb'; if multiple CL.EXE write to the same .PDB file, please use /FS
+  Accessor.cxx
+c:\users\jason\google drive\hamid_project\tmp\context\thirdparty\scintilla\lexlib\accessor.cxx : fatal error C1041: cannot open program database 'C:\Users\Jason\Google Drive\Hamid_project\tmp\ConTeXt\Debug\Obj\ConTeXt\vc140.idb'; if multiple CL.EXE write to the same .PDB file, please use /FS
+  Generating Code...
+cl : Command line warning D9028: minimal rebuild failure, reverting to normal build
