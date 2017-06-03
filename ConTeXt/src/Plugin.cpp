@@ -213,17 +213,22 @@ void editConfig()
 	ConTeXtEditU::getInstance()->EditConfig();
 }
 
+void loadConfig()
+{
+	MenuManager::getInstance()->loadConfig();
+}
+
 static FuncItem* getGeneratedFuncItemArray(int *nbF)
 {
 
 	MenuManager* menuManager = MenuManager::getInstance();
 
 	MenuManager::ItemVectorTD items;
-	items.reserve(8);
-	idx_t stopScriptIndex;
-	idx_t dynamicStartIndex;
-	idx_t scriptsMenuIndex;
-	idx_t runPreviousIndex;
+	//items.reserve(8);
+	//idx_t stopScriptIndex;
+	//idx_t dynamicStartIndex;
+	//idx_t scriptsMenuIndex;
+	//idx_t runPreviousIndex;
 
 	//items.push_back(std::pair<tstring, void(*)()>(_T("New Script"), newScript));
 	//items.push_back(std::pair<tstring, void(*)()>(_T("Show Console"), showConsole));
@@ -252,19 +257,22 @@ static FuncItem* getGeneratedFuncItemArray(int *nbF)
 
 	//items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
 	//items.push_back(std::pair<tstring, void(*)()>(_T("Context-Help"), doHelp));
+	items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
 	items.push_back(std::pair<tstring, void(*)()>(_T("Replace tags"), replace));
-	stopScriptIndex = items.size() - 1;
+	//stopScriptIndex = items.size() - 1;
 
 	items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
 	items.push_back(std::pair<tstring, void(*)()>(_T("Edit config"), editConfig));
-	runPreviousIndex = items.size() - 1;
+	items.push_back(std::pair<tstring, void(*)()>(_T("Load config"), loadConfig));
+
+	//runPreviousIndex = items.size() - 1;
 
 	items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
-	scriptsMenuIndex = items.size() - 1;
+	//scriptsMenuIndex = items.size() - 1;
 	items.push_back(std::pair<tstring, void(*)()>(_T("About"), About));
-	dynamicStartIndex = 0; //items.size() - 1;
+	//dynamicStartIndex = 0; //items.size() - 1;
 
-	FuncItem* funcItems = menuManager->getFuncItemArray(nbF, items, NULL, dynamicStartIndex, scriptsMenuIndex, stopScriptIndex, runPreviousIndex);
+	FuncItem* funcItems = menuManager->getFuncItemArray(nbF, items);
 
 
 	return funcItems;
@@ -277,10 +285,14 @@ FuncItem * getFuncsArray(int *count)
 {
 	//static FuncItem funcItems[] =
 	//{
-	//	//{ L"Refresh skin", RefreshSkin, 0, false, nullptr },
+	//	{ _T("--"), 0, 0, false, nullptr},
+	//	{ _T("Replace tags"), replace, 1, false, nullptr },
+	//	{ _T("--"), 0, 2, false, nullptr },
 	//	//{ L"Refresh all", RefreshAll, 0, false, nullptr },
 	//	//{ L"&Menu1", menu1, 0, false, nullptr},
-	//	{ L"&About...", About, 1, false, nullptr }
+	//	{ _T("Edit config"), editConfig, 3, false, nullptr },
+	//	{ _T("--"), 0, 4, false, nullptr },
+	//	{ _T("About"), About,5, false, nullptr }
 	//};
 
 	//*count = _countof(funcItems);
@@ -288,9 +300,10 @@ FuncItem * getFuncsArray(int *count)
 	//return funcItems;
 	funcItem = getGeneratedFuncItemArray(count);
 	return funcItem;
+
 }
 
-static void runScript(const char *filename, bool synchronous, HANDLE completedEvent /* = NULL */, bool allowQueuing /* = false */) {}
+//static void runScript(const char *filename, bool synchronous, HANDLE completedEvent /* = NULL */, bool allowQueuing /* = false */) {}
 
 //extern "C" __declspec(dllexport) void setInfo(NppData data)
 void setInfo(NppData data)
@@ -317,8 +330,9 @@ void setInfo(NppData data)
 	wcstombs(g_pluginDir, g_tPluginDir, wcslen(g_tPluginDir) + 1);
 
 	ConfigFile::create(g_tConfigDir, g_tPluginDir, reinterpret_cast<HINSTANCE>(g_hModule));
-	MenuManager::create(nppData._nppHandle, reinterpret_cast<HINSTANCE>(g_hModule), runScript);
 	ConTeXtEditU::create(nppData._nppHandle, g_SCI, reinterpret_cast<HINSTANCE>(g_hModule));
+	MenuManager::create(nppData._nppHandle, reinterpret_cast<HINSTANCE>(g_hModule));// , runScript);
+
 	//Tag::create(nppData._nppHandle);
 	g_infoSet = true;
 }
@@ -341,7 +355,8 @@ void beNotified(SCNotification *scn)
 		break;
 
 		case SCN_CHARADDED:
-			MessageBox(0, L"char added", L"muhaha", MB_OK);
+			break;
+			//MessageBox(0, L"char added", L"muhaha", MB_OK);
 	}
 }
 
@@ -363,9 +378,10 @@ LRESULT messageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_COMMAND:
 		//MenuManager::getInstance()->processWmCommand(wParam, lParam);
-		char tmp[100];
-		sprintf_s(tmp, "identifier: %d", wParam);
-		MessageBox(0, CA2T(tmp), L"muhaha",MB_OK);
+		//char tmp[100];
+		//sprintf_s(tmp, "identifier: %d", wParam);
+		//MessageBox(0, CA2T(tmp), L"muhaha",MB_OK);
+		MenuManager::getInstance()->processWmCommand(wParam, lParam);
 		break;
 
 	default:

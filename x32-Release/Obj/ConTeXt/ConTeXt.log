@@ -1,25 +1,9 @@
-﻿  Accessor.cxx
-  LexerBase.cxx
-  WordList.cxx
-  ConfigFile.cpp
-  ConTeXtEditU.cpp
-src\ConTeXtEditU.cpp(367): warning C4018: '<=': signed/unsigned mismatch
-src\ConTeXtEditU.cpp(373): warning C4018: '<=': signed/unsigned mismatch
-src\ConTeXtEditU.cpp(567): warning C4390: ';': empty controlled statement found; is this the intent?
-  DynamicIDManager.cpp
-  Lexer.cpp
-  MenuManager.cpp
-  NotepadPPU.cpp
-  NppAllocator.cpp
-  Plugin.cpp
-  StdAfx.cpp
-  Tag.cpp
-  WcharMbcsConverter.cpp
+﻿  Lexer.cpp
      Creating library C:\Users\Jason\Google Drive\Hamid_project\ConTeXt\x32-Release\ConTeXt.lib and object C:\Users\Jason\Google Drive\Hamid_project\ConTeXt\x32-Release\ConTeXt.exp
   Generating code
-  1632 of 1636 functions (99.8%) were compiled, the rest were copied from previous compilation.
-    29 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+  1 of 1572 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   ConTeXt.vcxproj -> C:\Users\Jason\Google Drive\Hamid_project\ConTeXt\x32-Release\ConTeXt.dll
   ConTeXt.vcxproj -> C:\Users\Jason\Google Drive\Hamid_project\ConTeXt\x32-Release\ConTeXt.pdb (Full PDB)

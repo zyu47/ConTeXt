@@ -36,6 +36,7 @@ ConTeXtEditU::ConTeXtEditU(HWND hNotepad, HWND hSCI, HINSTANCE hInst): tag_ins(h
 	hNpp = hNotepad;
 	hSci = hSCI;
 	ReadConfig();
+	/*
 	Funcs[0] = Func00;
 	Funcs[1] = Func01;
 	Funcs[2] = Func02;
@@ -135,7 +136,7 @@ ConTeXtEditU::ConTeXtEditU(HWND hNotepad, HWND hSCI, HINSTANCE hInst): tag_ins(h
 	Funcs[96] = Func96;
 	Funcs[97] = Func97;
 	Funcs[98] = Func98;
-
+	*/
 }
 
 void ConTeXtEditU::ClearPairs()

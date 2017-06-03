@@ -205,11 +205,12 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 	char* name = nullptr;
 	int count = 0;
 	char buffer[128];
+	int i = startPos;
 //	int digits = 0;
-	for (int i = startPos; i < length; ++i)
+	for (; i <= length ; ++i)
 	{
 		// Make ch 0 if at EOF.
-		char ch = (i == length - 1) ? '\0' : styler[i];
+		char ch = (i == length) ? '\0' : styler[i];
 
 		// Amount of EOL chars is 2 (\r\n) with the Windows format and 1 (\n) with Unix format.
 		int chEOL = (styler[i] == '\n' && styler[i - 1] == '\r') ? 2 : 1;
@@ -489,18 +490,9 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 			}
 			break;
 		}
-		/*
-		wchar_t b[256];
-		wsprintfW(b, L"%d", i);
-		OutputDebugString(b);
 		
-		wchar_t wtext[20];
-		mbstowcs(wtext, buffer, strlen(buffer) + 1);
-		LPWSTR ptr = wtext;
-		OutputDebugString(ptr);
-		*/
 	}
-
+	
 	styler.Flush();
 }
 

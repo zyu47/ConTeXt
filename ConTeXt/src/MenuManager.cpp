@@ -18,14 +18,14 @@ WNDPROC MenuManager::s_origWndProc;
 
 bool MenuManager::s_menuItemClicked;
 
-MenuManager::runScriptIDFunc MenuManager::s_runScript;
+//MenuManager::runScriptIDFunc MenuManager::s_runScript;
 
 
-MenuManager* MenuManager::create(HWND hNotepad, HINSTANCE hInst, runScriptFunc runScript)
+MenuManager* MenuManager::create(HWND hNotepad, HINSTANCE hInst)//, runScriptFunc runScript)
 {
 	if (NULL == s_menuManager)
 	{
-		s_menuManager = new MenuManager(hNotepad, hInst, runScript);
+		s_menuManager = new MenuManager(hNotepad, hInst);// , runScript);
 	}
 	return s_menuManager;
 }
@@ -61,10 +61,10 @@ MenuManager::~MenuManager()
 	//	// I don't know what to do with that, but a destructor should never throw, so...
 	//}
 
-	if (m_pythonPluginMenu)
+	if (m_contextMenu)
 	{
-		::DestroyMenu(m_pythonPluginMenu);
-		m_pythonPluginMenu = NULL;
+		::DestroyMenu(m_contextMenu);
+		m_contextMenu = NULL;
 	}
 	for (int gp_no = 0; gp_no != FuncsGroupNo; ++gp_no)
 	{
@@ -90,18 +90,18 @@ MenuManager* MenuManager::getInstance()
 	return s_menuManager;
 }
 
-MenuManager::MenuManager(HWND hNotepad, HINSTANCE hInst, runScriptFunc runScript) :
-	m_runScript (runScript),	
+MenuManager::MenuManager(HWND hNotepad, HINSTANCE hInst) ://, runScriptFunc runScript) :
+	//m_runScript (runScript),	
 	m_hNotepad (hNotepad),	
 	m_hInst (hInst),
-	m_dynamicStartIndex(IDX_MAX),
-	m_dynamicCount(0),
-	m_originalDynamicCount(0),
+	//m_dynamicStartIndex(IDX_MAX),
+	//m_dynamicCount(0),
+	//m_originalDynamicCount(0),
 	m_scriptsMenuIndex(IDX_MAX),
-	m_stopScriptIndex(IDX_MAX),
-	m_runPreviousIndex(IDX_MAX),
-	m_originalLastCmdIndex(IDX_MAX),
-	m_pythonPluginMenu (NULL),
+	//m_stopScriptIndex(IDX_MAX),
+	//m_runPreviousIndex(IDX_MAX),
+	//m_originalLastCmdIndex(IDX_MAX),
+	m_contextMenu(NULL),
 	m_funcItems(NULL),
 	m_funcItemCount(0),
 	m_idAllocator(NULL),
@@ -113,168 +113,17 @@ MenuManager::MenuManager(HWND hNotepad, HINSTANCE hInst, runScriptFunc runScript
 	for (int gp_no = 0; gp_no != FuncsGroupNo; ++gp_no)
 	{
 		m_hScriptsMenu[gp_no] = NULL;
+		gp_names[gp_no] = new char[10];
+		sprintf(gp_names[gp_no], "Group%d", (gp_no + 1));
 	}
-	funcs_per_group = static_cast<int>(MaxFuncs / FuncsGroupNo);
-	/*
-	m_runScriptFuncs[0] = runScript0;
-	m_runScriptFuncs[1] = runScript1;
-	m_runScriptFuncs[2] = runScript2;
-	m_runScriptFuncs[3] = runScript3;
-	m_runScriptFuncs[4] = runScript4;
-	m_runScriptFuncs[5] = runScript5;
-	m_runScriptFuncs[6] = runScript6;
-	m_runScriptFuncs[7] = runScript7;
-	m_runScriptFuncs[8] = runScript8;
-	m_runScriptFuncs[9] = runScript9;
-	m_runScriptFuncs[10] = runScript10;
-	m_runScriptFuncs[11] = runScript11;
-	m_runScriptFuncs[12] = runScript12;
-	m_runScriptFuncs[13] = runScript13;
-	m_runScriptFuncs[14] = runScript14;
-	m_runScriptFuncs[15] = runScript15;
-	m_runScriptFuncs[16] = runScript16;
-	m_runScriptFuncs[17] = runScript17;
-	m_runScriptFuncs[18] = runScript18;
-	m_runScriptFuncs[19] = runScript19;
-	m_runScriptFuncs[20] = runScript20;
-	m_runScriptFuncs[21] = runScript21;
-	m_runScriptFuncs[22] = runScript22;
-	m_runScriptFuncs[23] = runScript23;
-	m_runScriptFuncs[24] = runScript24;
-	m_runScriptFuncs[25] = runScript25;
-	m_runScriptFuncs[26] = runScript26;
-	m_runScriptFuncs[27] = runScript27;
-	m_runScriptFuncs[28] = runScript28;
-	m_runScriptFuncs[29] = runScript29;
-	m_runScriptFuncs[30] = runScript30;
-	m_runScriptFuncs[31] = runScript31;
-	m_runScriptFuncs[32] = runScript32;
-	m_runScriptFuncs[33] = runScript33;
-	m_runScriptFuncs[34] = runScript34;
-	m_runScriptFuncs[35] = runScript35;
-	m_runScriptFuncs[36] = runScript36;
-	m_runScriptFuncs[37] = runScript37;
-	m_runScriptFuncs[38] = runScript38;
-	m_runScriptFuncs[39] = runScript39;
-	m_runScriptFuncs[40] = runScript40;
-	m_runScriptFuncs[41] = runScript41;
-	m_runScriptFuncs[42] = runScript42;
-	m_runScriptFuncs[43] = runScript43;
-	m_runScriptFuncs[44] = runScript44;
-	m_runScriptFuncs[45] = runScript45;
-	m_runScriptFuncs[46] = runScript46;
-	m_runScriptFuncs[47] = runScript47;
-	m_runScriptFuncs[48] = runScript48;
-	m_runScriptFuncs[49] = runScript49;
-	
 
-
-
-	m_keyMap.insert(KeyMapTD::value_type(VK_BACK, _T("Backspace")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_TAB, _T("Tab")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_RETURN, _T("Enter")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_ESCAPE, _T("Esc")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_SPACE, _T("Spacebar")));
-
-	m_keyMap.insert(KeyMapTD::value_type(VK_PRIOR, _T("Page up")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NEXT, _T("Page down")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_END, _T("End")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_HOME, _T("Home")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_LEFT, _T("Left")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_UP, _T("Up")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_RIGHT, _T("Right")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_DOWN, _T("Down")));
-
-	m_keyMap.insert(KeyMapTD::value_type(VK_INSERT, _T("INS")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_DELETE, _T("DEL")));
-
-	m_keyMap.insert(KeyMapTD::value_type(VK_0, _T("0")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_1, _T("1")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_2, _T("2")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_3, _T("3")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_4, _T("4")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_5, _T("5")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_6, _T("6")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_7, _T("7")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_8, _T("8")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_9, _T("9")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_A, _T("A")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_B, _T("B")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_C, _T("C")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_D, _T("D")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_E, _T("E")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F, _T("F")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_G, _T("G")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_H, _T("H")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_I, _T("I")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_J, _T("J")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_K, _T("K")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_L, _T("L")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_M, _T("M")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_N, _T("N")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_O, _T("O")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_P, _T("P")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_Q, _T("Q")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_R, _T("R")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_S, _T("S")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_T, _T("T")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_U, _T("U")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_V, _T("V")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_W, _T("W")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_X, _T("X")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_Y, _T("Y")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_Z, _T("Z")));
-
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD0, _T("Numpad 0")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD1, _T("Numpad 1")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD2, _T("Numpad 2")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD3, _T("Numpad 3")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD4, _T("Numpad 4")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD5, _T("Numpad 5")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD6, _T("Numpad 6")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD7, _T("Numpad 7")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD8, _T("Numpad 8")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_NUMPAD9, _T("Numpad 9")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_MULTIPLY, _T("Num *")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_ADD, _T("Num +")));
-	//m_keyMap.insert(KeyMapTD::value_type(VK_SEPARATOR, _T("Num Enter")));	//this one doesnt seem to work
-	m_keyMap.insert(KeyMapTD::value_type(VK_SUBTRACT, _T("Num -")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_DECIMAL, _T("Num .")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_DIVIDE, _T("Num /")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F1, _T("F1")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F2, _T("F2")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F3, _T("F3")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F4, _T("F4")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F5, _T("F5")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F6, _T("F6")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F7, _T("F7")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F8, _T("F8")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F9, _T("F9")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F10, _T("F10")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F11, _T("F11")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_F12, _T("F12")));
-
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_3, _T("~")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_MINUS, _T("-")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_PLUS, _T("=")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_4, _T("[")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_6, _T("]")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_1, _T(";")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_7, _T("'")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_5, _T("\\")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_COMMA, _T(",")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_PERIOD, _T(".")));
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_2, _T("/")));
-
-	m_keyMap.insert(KeyMapTD::value_type(VK_OEM_102, _T("<>")));
-	*/
 }
 
 /* This code was shamefully robbed from NppExec from Dovgan Vitaliy*/
 HMENU MenuManager::getOurMenu()
 {
 	assert(m_funcItems != NULL);
-	if (m_funcItems && NULL == m_pythonPluginMenu)
+	if (m_funcItems && NULL == m_contextMenu)
 	{
 		HMENU hPluginMenu = (HMENU)::SendMessage(m_hNotepad, NPPM_GETMENUHANDLE, 0, 0);
 
@@ -289,28 +138,29 @@ HMENU MenuManager::getOurMenu()
 			if ( ::GetMenuState(hSubMenu, (UINT)m_funcItems[0]._cmdID, MF_BYCOMMAND) != -1 )
 			{
 				// this is our "Python Script" sub-menu
-				m_pythonPluginMenu = hSubMenu;
+				m_contextMenu = hSubMenu;
 				break;
 			}
 		}
 	}
 
-	return m_pythonPluginMenu;
+	return m_contextMenu;
 }
-
-void MenuManager::stopScriptEnabled(bool enabled)
-{
-	HMENU pythonPluginMenu = getOurMenu();
-	if (pythonPluginMenu)
-	{
-		::EnableMenuItem(pythonPluginMenu, m_stopScriptIndex, MF_BYPOSITION | (enabled ? MF_ENABLED : MF_GRAYED));
-	}
-}
+//
+//void MenuManager::stopScriptEnabled(bool enabled)
+//{
+//	HMENU pythonPluginMenu = getOurMenu();
+//	if (pythonPluginMenu)
+//	{
+//		::EnableMenuItem(pythonPluginMenu, m_stopScriptIndex, MF_BYPOSITION | (enabled ? MF_ENABLED : MF_GRAYED));
+//	}
+//}
 
 bool MenuManager::populateScriptsMenu()
 {
-	m_pythonPluginMenu = getOurMenu();
-	if (!m_pythonPluginMenu)
+	m_contextMenu = getOurMenu();
+	//hPluginMenu = (HMENU)::SendMessage(m_hNotepad, NPPM_GETMENUHANDLE, 0, 0);
+	if (!m_contextMenu)
 	{
 		//g_console.message("Error: Unable to find Python Plugin Menu\n");
 		return false;
@@ -323,18 +173,20 @@ bool MenuManager::populateScriptsMenu()
 		{
 			m_scriptsMenuManager->begin();
 		}
+		//idx_t m_scriptsMenuIndex = 0;
 		for (int gp_no = 0; gp_no != FuncsGroupNo; ++gp_no)
 		{
 			m_hScriptsMenu[gp_no] = CreateMenu();
-			InsertMenu(m_pythonPluginMenu, m_scriptsMenuIndex, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(m_hScriptsMenu[gp_no]), _T("Scripts"));
-			m_submenus.insert(std::pair<std::string, HMENU>("\\", m_hScriptsMenu[gp_no]));
+			InsertMenu(m_contextMenu, gp_no, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(m_hScriptsMenu[gp_no]), CA2T(gp_names[gp_no]));
+			//m_submenus.insert(std::pair<std::string, HMENU>("\\", m_hScriptsMenu[gp_no]));
 
 			// Fill the actual menu
 
 			refreshScriptsMenu(gp_no);
 
 			// Dynamic scripts will start at one lower index now we've inserted the Scripts submenu
-			++m_dynamicStartIndex;
+			//++m_dynamicStartIndex;
+			//++m_scriptsMenuIndex;
 			//--m_scriptsMenuIndex;
 			//++m_scriptsMenuIndex;
 		}
@@ -357,23 +209,23 @@ void MenuManager::refreshScriptsMenu(int gp_no)
 		RemoveMenu(m_hScriptsMenu[gp_no], 0, MF_BYPOSITION);
 	}
 
-
-	m_scriptCommands.erase(m_scriptCommands.begin(), m_scriptCommands.end());
-	m_machineScriptNames.erase(m_machineScriptNames.begin(), m_machineScriptNames.end());
+	funcs_map[gp_no].erase(funcs_map[gp_no].begin(), funcs_map[gp_no].end());
+	//m_scriptCommands.erase(m_scriptCommands.begin(), m_scriptCommands.end());
+	//m_machineScriptNames.erase(m_machineScriptNames.begin(), m_machineScriptNames.end());
 	
 	
 	
 	// Destroy all the menus we've created
-	for(SubmenusTD::iterator it = m_submenus.begin(); it != m_submenus.end(); ++it)
-	{
-		if (it->first != "\\")
-		{
+	//for(SubmenusTD::iterator it = m_submenus.begin(); it != m_submenus.end(); ++it)
+	//{
+	//	if (it->first != "\\")
+	//	{
 			// Destroy the menu
-			DestroyMenu(it->second);
-		}
-	}
+	//		DestroyMenu(it->second);
+	//	}
+	//}
 	
-	m_submenus.erase(m_submenus.begin(), m_submenus.end());
+	//m_submenus.erase(m_submenus.begin(), m_submenus.end());
 	
 
 	/*
@@ -412,25 +264,41 @@ void MenuManager::refreshScriptsMenu(int gp_no)
 			m_scriptsMenuManager->currentID(),
 			contextEdit->pairs[func_no].name);
 
+		funcs_map[gp_no].insert(std::pair<idx_t, size_t>(m_scriptsMenuManager->currentID(), func_no));
+
 		++position;
 		++(*m_scriptsMenuManager);
 	}
-	if (func_no < (gp_no + 2) * funcs_per_group)
+	if (contextEdit->numRead < (gp_no + 2) * funcs_per_group)
 	{
-		for (; func_no != MaxFuncs; ++func_no)
+		for (; func_no != m_funcItemCount; ++func_no)
 		{
 			InsertMenuA(m_hScriptsMenu[gp_no],
 				position,
 				MF_BYCOMMAND | MF_STRING | MF_UNCHECKED,
 				m_scriptsMenuManager->currentID(),
 				contextEdit->pairs[func_no].name);
-			
+
+			funcs_map[gp_no].insert(std::pair<idx_t, size_t>(m_scriptsMenuManager->currentID(), func_no));
+
 			++position;
 			++(*m_scriptsMenuManager);
 		}
 	}
 	//DrawMenuBar(m_hNotepad);
 }
+
+void MenuManager::loadConfig()
+{
+	ConTeXtEditU* contextEdit_ins = ConTeXtEditU::getInstance();
+	contextEdit_ins->ReadConfig();
+	m_funcItemCount = contextEdit_ins->numRead;
+	funcs_per_group = static_cast<int>(m_funcItemCount / FuncsGroupNo);
+
+	for (int gp_no = 0; gp_no != FuncsGroupNo; ++gp_no)
+		refreshScriptsMenu(gp_no);
+}
+
 
 /*
 idx_t MenuManager::getOriginalCommandID(idx_t scriptNumber)
@@ -556,6 +424,7 @@ bool MenuManager::findScripts(HMENU hBaseMenu, size_t basePathLength, std::strin
 
 }
 */
+/*
 void MenuManager::menuCommand(idx_t commandID)
 {
 	// Try the menu commands list first, then the script commands
@@ -574,6 +443,7 @@ void MenuManager::menuCommand(idx_t commandID)
 	}
 
 }
+*/
 /*
 void MenuManager::toolbarCommand(idx_t commandID)
 {
@@ -602,6 +472,7 @@ static LRESULT CALLBACK notepadWndProc(HWND hWnd, UINT message, WPARAM wParam, L
 */
 BOOL MenuManager::processWmCommand(WPARAM wParam, LPARAM /* lParam */)
 {
+	/*
 	if (inFixedRange(LOWORD(wParam)))
 	{
 		MenuManager::s_menuItemClicked = true;
@@ -609,16 +480,26 @@ BOOL MenuManager::processWmCommand(WPARAM wParam, LPARAM /* lParam */)
 	else if (inDynamicRange(LOWORD(wParam)))
 	{
 		MenuManager::s_menuItemClicked = true;
-		menuCommand(LOWORD(wParam));
+		//menuCommand(LOWORD(wParam));
 		return TRUE;
 	}
-	/*else if (inToolbarRange(LOWORD(wParam)))
+	else if (inToolbarRange(LOWORD(wParam)))
 	{
 		MenuManager::s_menuItemClicked = true;
 		toolbarCommand(LOWORD(wParam));
 		return TRUE;
 	}*/
-
+	for (int gp_no = 0; gp_no != FuncsGroupNo; ++gp_no)
+	{
+		std::map<idx_t, size_t>::iterator func_found = funcs_map[gp_no].find(LOWORD(wParam));
+		if (func_found != funcs_map[gp_no].end())
+		{
+			size_t func_no = func_found->second;
+			const ConTeXtEditU* contextEdit_ins = ConTeXtEditU::getInstance();
+			contextEdit_ins->ApplyPair(contextEdit_ins->pairs[func_no]);
+			return TRUE;
+		}
+	}
 	return FALSE;
 }
 
@@ -630,22 +511,22 @@ BOOL MenuManager::processWmCommand(WPARAM wParam, LPARAM /* lParam */)
 //
 
 
-FuncItem* MenuManager::getFuncItemArray(int *nbF, ItemVectorTD items, runScriptIDFunc runScript, idx_t dynamicStartIndex, idx_t scriptsMenuIndex, idx_t stopScriptIndex, idx_t runPreviousIndex) 
+FuncItem* MenuManager::getFuncItemArray(int *nbF, ItemVectorTD items)
 {
-	s_runScript = runScript;
+	//s_runScript = runScript;
 	
 	
-	ConfigFile* configFile = ConfigFile::getInstance();
+	//ConfigFile* configFile = ConfigFile::getInstance();
 	
-	ConfigFile::MenuItemsTD menuItems = configFile->getMenuItems();
+	//ConfigFile::MenuItemsTD menuItems = configFile->getMenuItems();
 	
 
-	const ConTeXtEditU* contextEdit = ConTeXtEditU::getInstance();
+	//const ConTeXtEditU* contextEdit = ConTeXtEditU::getInstance();
 	
 	// Remove one from the count of menu items if the list is empty
 	// as we'll only have one separator
 	//*nbF =  (int)(menuItems.size() + items.size() + (menuItems.empty() ? 0 : 1)) + contextEdit->numRead;
-	*nbF = items.size() + contextEdit->numRead + 1;
+	*nbF = items.size() + 1;
 	m_funcItemCount = (size_t)*nbF;
 
 	// WARNING: If getFuncItemArray is called twice, we'll leak memory!
@@ -656,16 +537,16 @@ FuncItem* MenuManager::getFuncItemArray(int *nbF, ItemVectorTD items, runScriptI
 	
 	for(ItemVectorTD::iterator it = items.begin(); it != items.end(); ++it)
 	{
-		if (position == dynamicStartIndex)
-		{
-			for (int func_no = 0; func_no != contextEdit->numRead; ++func_no)
+		//if (position == dynamicStartIndex)
+		//{
+			/*for (int func_no = 0; func_no != contextEdit->numRead; ++func_no)
 			{
 				_tcscpy_s(m_funcItems[position]._itemName, 64, CA2T(contextEdit->pairs[func_no].name));
 				m_funcItems[position]._init2Check = false;
 				m_funcItems[position]._pShKey = NULL;
 				m_funcItems[position]._pFunc = contextEdit->Funcs[func_no];
 				++position;
-			}
+			}*/
 			/*for (ConfigFile::MenuItemsTD::iterator iter = menuItems.begin(); iter != menuItems.end(); ++iter)
 			{
 				TCHAR filenameCopy[MAX_PATH];
@@ -682,14 +563,14 @@ FuncItem* MenuManager::getFuncItemArray(int *nbF, ItemVectorTD items, runScriptI
 			// Add another separator if there were one or more dynamic items
 			//if (!menuItems.empty())
 			//{
-				_tcscpy_s(m_funcItems[position]._itemName, 64, _T("--"));
-				m_funcItems[position]._init2Check = false;
-				m_funcItems[position]._pShKey = NULL;
-				m_funcItems[position]._pFunc = NULL;
-				++position;
+		//		_tcscpy_s(m_funcItems[position]._itemName, 64, _T("--"));
+		//		m_funcItems[position]._init2Check = false;
+		//		m_funcItems[position]._pShKey = NULL;
+		//		m_funcItems[position]._pFunc = NULL;
+		//		++position;
 			//}
 	
-		}
+		//}
 
 		_tcscpy_s(m_funcItems[position]._itemName, 64, it->first.c_str());
 		m_funcItems[position]._init2Check = false;
@@ -701,13 +582,13 @@ FuncItem* MenuManager::getFuncItemArray(int *nbF, ItemVectorTD items, runScriptI
 	
 	
 
-	m_dynamicStartIndex = dynamicStartIndex;
-	m_dynamicCount = menuItems.size();
-	m_originalDynamicCount = m_dynamicCount;
-	m_scriptsMenuIndex = scriptsMenuIndex;
-	m_stopScriptIndex = stopScriptIndex;
-	m_runPreviousIndex = runPreviousIndex;
-	m_originalLastCmdIndex = (size_t)*nbF - 1;
+	//m_dynamicStartIndex = dynamicStartIndex;
+	//m_dynamicCount = menuItems.size();
+	//m_originalDynamicCount = m_dynamicCount;
+	//m_scriptsMenuIndex = scriptsMenuIndex;
+	//m_stopScriptIndex = stopScriptIndex;
+	//m_runPreviousIndex = runPreviousIndex;
+	//m_originalLastCmdIndex = (size_t)*nbF - 1;
 	return m_funcItems;
 
 }
@@ -1124,6 +1005,10 @@ void MenuManager::idsInitialised()
 		return;
 	}
 */
+	const ConTeXtEditU* contextEdit_ins = ConTeXtEditU::getInstance();
+	m_funcItemCount = contextEdit_ins->numRead;
+	funcs_per_group = static_cast<int>(m_funcItemCount / FuncsGroupNo);
+
 	if (::SendMessage(m_hNotepad, NPPM_ALLOCATESUPPORTED, 0, 0) == TRUE)
 	{
 		m_idAllocator = new NppAllocator(m_hNotepad);
@@ -1170,7 +1055,7 @@ void MenuManager::idsInitialised()
 //	assert(m_toolbarMenuManager != NULL);
 //	return m_toolbarMenuManager && m_toolbarMenuManager->inRange(commandID);
 //}
-
+/*
 bool MenuManager::inDynamicRange(idx_t commandID)
 {
 	assert(m_dynamicMenuManager != NULL);
@@ -1184,3 +1069,4 @@ bool MenuManager::inFixedRange(idx_t commandID)
 	assert(m_originalDynamicMenuManager != NULL);
 	return m_originalDynamicMenuManager && m_originalDynamicMenuManager->inRange(commandID);
 }
+*/

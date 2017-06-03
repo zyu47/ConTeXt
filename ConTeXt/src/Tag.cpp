@@ -37,6 +37,7 @@ bool Tag::GetKey()
 	while ((posRight < stop) && isalnum(::SendMessage(hSci, SCI_GETCHARAT, posRight, 0)))
 		++posRight;
 	res = FALSE;
+
 	if (posRight - posLeft <= 0)
 		ShowMsg(NoKeyMsg);
 	else if (posRight - posLeft <= MaxKeyLen)
@@ -70,24 +71,25 @@ void Tag::replace()
 	else if (GetKey())
 	{
 		tag = tags.find(std::string(key));
-	}
-	if (tag != tags.end()) {
-		::SendMessage(hSci, SCI_BEGINUNDOACTION, 0, 0);
-		line = ::SendMessage(hSci, SCI_LINEFROMPOSITION,posLeft, 0);
-		indentBeg = ::SendMessage(hSci, SCI_POSITIONFROMLINE,line,0);
-		indentEnd = ::SendMessage(hSci, SCI_GETLINEINDENTPOSITION, line, 0);
-		strcpy(msg,""); //(*msg is just a temp variable here *)
-		::SendMessage(hSci, SCI_SETSEL, posLeft, posRight);
-		::SendMessage(hSci, SCI_REPLACESEL, 0, reinterpret_cast<LPARAM>(msg));
 
-		PasteValue(&posLeft, tag->second, &indentBeg, &indentEnd);
-		::SendMessage(hSci, SCI_ENDUNDOACTION, 0, 0);
-	}
-	else
-	{
-		strcpy_s(msg, KeyNotFoundMsg);
-		strcat_s(msg, key);
-		ShowMsg(msg);
+		if (tag != tags.end()) {
+			::SendMessage(hSci, SCI_BEGINUNDOACTION, 0, 0);
+			line = ::SendMessage(hSci, SCI_LINEFROMPOSITION, posLeft, 0);
+			indentBeg = ::SendMessage(hSci, SCI_POSITIONFROMLINE, line, 0);
+			indentEnd = ::SendMessage(hSci, SCI_GETLINEINDENTPOSITION, line, 0);
+			strcpy(msg, ""); //(*msg is just a temp variable here *)
+			::SendMessage(hSci, SCI_SETSEL, posLeft, posRight);
+			::SendMessage(hSci, SCI_REPLACESEL, 0, reinterpret_cast<LPARAM>(msg));
+
+			PasteValue(&posLeft, tag->second, &indentBeg, &indentEnd);
+			::SendMessage(hSci, SCI_ENDUNDOACTION, 0, 0);
+		}
+		else
+		{
+			strcpy_s(msg, KeyNotFoundMsg);
+			strcat_s(msg, key);
+			ShowMsg(msg);
+		}
 	}
 }
 

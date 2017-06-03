@@ -39,7 +39,7 @@ typedef size_t idx_t;
 #define MaxValueLen 1024
 #define MaxBuffLen 1024
 #define MaxLineLen 2049
-#define MaxFuncs 99
+#define MaxFuncs 120
 #define MaxIndent 80
 #define KeyNotFoundMsgLen 40
 

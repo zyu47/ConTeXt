@@ -25,7 +25,7 @@ public:
 	static void ApplyPair(Pair pair);
 	static ConTeXtEditU* getInstance() { return s_contextEditU; }
 	void EditConfig();
-	
+	/*
 	static void Func00() { ApplyPair(pairs[0]); }
 	static void Func01() { ApplyPair(pairs[1]); }
 	static void Func02() { ApplyPair(pairs[2]); }
@@ -125,7 +125,7 @@ public:
 	static void Func96() { ApplyPair(pairs[96]); }
 	static void Func97() { ApplyPair(pairs[97]); }
 	static void Func98() { ApplyPair(pairs[98]); }
-
+	*/
 	void ReadConfig();//VAR numRead : INTEGER; initToolbar: BOOLEAN);
 	char ReadChar(DWORD &buffPos, DWORD &buffLen, bool &eof, HANDLE &hFile, char* buff, LPDWORD read);
 	bool ReadLine(char* line, DWORD &buffPos, DWORD &buffLen, bool &eof,
