@@ -72,16 +72,17 @@ int ConTeXt::ParseTeXCommand(unsigned int pos, Accessor &styler, char *command)
 int ConTeXt::classifyFoldPointTeXPaired(const char* s) {
 	int lev = 0;
 	if (!(isdigit(s[0]) || (s[0] == '.'))) {
-		if (strcmp(s, "begin") == 0 || strcmp(s, "FoldStart") == 0 ||
-			strcmp(s, "abstract") == 0 || strcmp(s, "unprotect") == 0 ||
-			strcmp(s, "title") == 0 || strncmp(s, "start", 5) == 0 || strncmp(s, "Start", 5) == 0 ||
-			strcmp(s, "documentclass") == 0 || strncmp(s, "if", 2) == 0
+		if (strcmp(s, "autostarttext") == 0 || strncmp(s, "begin", 5) == 0 || strcmp(s, "begstrut") == 0 ||
+			strcmp(s, "dostarttagged") == 0 || strcmp(s, "globalpushreferenceprefix") == 0 ||
+			strncmp(s, "push", 4) == 0 || strcmp(s, "savecolor") == 0 || strcmp(s, "setbuffer") == 0 ||			
+			strncmp(s, "start", 5) == 0 || strcmp(s, "unprotect") == 0 //|| strncmp(s, "Start", 5) == 0 ||
+			//strcmp(s, "documentclass") == 0 || strncmp(s, "if", 2) == 0
 			)
 			lev = 1;
-		if (strcmp(s, "end") == 0 || strcmp(s, "FoldStop") == 0 ||
-			strcmp(s, "maketitle") == 0 || strcmp(s, "protect") == 0 ||
-			strncmp(s, "stop", 4) == 0 || strncmp(s, "Stop", 4) == 0 ||
-			strcmp(s, "fi") == 0
+		if (strcmp(s, "autostoptext") == 0 || strcmp(s, "dostoptagged") == 0 ||strncmp(s, "end", 3) == 0 ||
+			strcmp(s, "globalpopreferenceprefix") == 0 || strncmp(s, "pop", 3) == 0 ||
+			strcmp(s, "protect") == 0 || strcmp(s, "restorecolor") == 0 ||
+			strncmp(s, "stop", 4) == 0 //|| strncmp(s, "Stop", 4) == 0 ||
 			)
 			lev = -1;
 	}
@@ -90,24 +91,26 @@ int ConTeXt::classifyFoldPointTeXPaired(const char* s) {
 
 int ConTeXt::classifyFoldPointTeXUnpaired(const char* s) {
 	int lev = 0;
+	/*
 	if (!(isdigit(s[0]) || (s[0] == '.'))) {
-		if (strcmp(s, "part") == 0 ||
+		if (//strcmp(s, "part") == 0 ||
 			strcmp(s, "chapter") == 0 ||
 			strcmp(s, "section") == 0 ||
 			strcmp(s, "subsection") == 0 ||
 			strcmp(s, "subsubsection") == 0 ||
-			strcmp(s, "CJKfamily") == 0 ||
-			strcmp(s, "appendix") == 0 ||
-			strcmp(s, "Topic") == 0 || strcmp(s, "topic") == 0 ||
+			//strcmp(s, "CJKfamily") == 0 ||
+			//strcmp(s, "appendix") == 0 ||
+			//strcmp(s, "Topic") == 0 || strcmp(s, "topic") == 0 ||
 			strcmp(s, "subject") == 0 || strcmp(s, "subsubject") == 0 ||
-			strcmp(s, "def") == 0 || strcmp(s, "gdef") == 0 || strcmp(s, "edef") == 0 ||
-			strcmp(s, "xdef") == 0 || strcmp(s, "framed") == 0 ||
-			strcmp(s, "frame") == 0 ||
-			strcmp(s, "foilhead") == 0 || strcmp(s, "overlays") == 0 || strcmp(s, "slide") == 0
+			//strcmp(s, "def") == 0 || strcmp(s, "gdef") == 0 || strcmp(s, "edef") == 0 ||
+			//strcmp(s, "xdef") == 0 ||
+			strcmp(s, "framed") == 0 //||
+			//strcmp(s, "frame") == 0 ||
+			//strcmp(s, "foilhead") == 0 || strcmp(s, "overlays") == 0 || strcmp(s, "slide") == 0
 			) {
 			lev = 1;
 		}
-	}
+	}*/
 	return lev;
 }
 
@@ -501,19 +504,28 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 	
 	Accessor styler(pAccess, nullptr);
 
-	bool foldCompact = styler.GetPropertyInt("fold.compact", 1) != 0;
+	//bool foldCompact = TRUE;//styler.GetPropertyInt("fold.compact", 1) != 0;
 	unsigned int endPos = startPos + length;
 	int visibleChars = 0;
 	int lineCurrent = styler.GetLine(startPos);
 	int levelPrev = styler.LevelAt(lineCurrent) & SC_FOLDLEVELNUMBERMASK;
 	int levelCurrent = levelPrev;
 	char chNext = styler[startPos];
-	char buffer[100] = "";
+	char buffer[101] = "";
 
 	for (unsigned int i = startPos; i < endPos; i++) {
 		char ch = chNext;
 		chNext = styler.SafeGetCharAt(i + 1);
 		bool atEOL = (ch == '\r' && chNext != '\n') || (ch == '\n');
+		if (ch == '%')
+		{
+			i = styler.LineStart(lineCurrent + 1) - 1;
+			++visibleChars;
+			atEOL = TRUE;
+			ch = '\n';
+			chNext = styler.SafeGetCharAt(i + 1);
+		}
+
 
 		if (ch == '\\') {
 			ParseTeXCommand(i, styler, buffer);
@@ -558,7 +570,8 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 			levelCurrent -= 1;
 		}
 		*/
-		bool foldComment = styler.GetPropertyInt("fold.comment") != 0;
+		
+		bool foldComment = TRUE;// styler.GetPropertyInt("fold.comment") != 0;
 
 		if (foldComment && atEOL && IsTeXCommentLine(lineCurrent, styler))
 		{
@@ -573,13 +586,13 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 				!IsTeXCommentLine(lineCurrent + 1, styler))
 				levelCurrent--;
 		}
-
+		
 		//---------------------------------------------------------------------------------------------
 
 		if (atEOL) {
 			int lev = levelPrev;
-			if (visibleChars == 0 && foldCompact)
-				lev |= SC_FOLDLEVELWHITEFLAG;
+			//if (visibleChars == 0 && foldCompact)
+			//	lev |= SC_FOLDLEVELWHITEFLAG;
 			if ((levelCurrent > levelPrev) && (visibleChars > 0))
 				lev |= SC_FOLDLEVELHEADERFLAG;
 			if (lev != styler.LevelAt(lineCurrent)) {
@@ -590,7 +603,8 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 			visibleChars = 0;
 		}
 
-		if (!isspacechar(ch))
+		//if (!isspacechar(ch))
+		if (isalnum(ch))
 			visibleChars++;
 	}
 

@@ -42,6 +42,8 @@ public:
 	};
 
 	static MenuManager* getInstance();
+	static void         deleteInstance();
+
 	//static void         deleteInstance();
 
 
@@ -57,7 +59,7 @@ public:
 	//void reconfigure();
 
 	void refreshScriptsMenu(int);
-	int funcs_per_group;
+	//int funcs_per_group;
 
 	//void configureToolbarIcons();
 
@@ -136,6 +138,9 @@ private:
 	HMENU		hPluginMenu;
 	FuncItem*   m_funcItems;
 	size_t		m_funcItemCount;
+	size_t		m_group2Start;
+	size_t		m_group3Start;
+
 	std::string m_machineScriptsPath;
 	std::string m_userScriptsPath;
 	tstring		m_runLastScriptShortcut;

@@ -465,17 +465,28 @@ void ConTeXtEditU::ReadConfig()//VAR numRead : INTEGER; initToolbar: BOOLEAN)
 	}
 
 	while (section)
-		if (strcmp(line, "[Commands]") == 0)
+		/*if (strcmp(line, "[commands]") == 0)
+		{
+			while (readline(line, buffpos, bufflen, eof,
+				hfile, buff, read, commentchar, section)) {	}
+		}
+		else */
+		if (strcmp(line, "[Group1]") == 0 ||
+			strcmp(line, "[Group2]") == 0 ||
+			strcmp(line, "[Group3]") == 0 )
 		{
 			//(*read menu items *)
+			if (strcmp(line, "[Group2]") == 0)
+				group2Start = numRead;
+			if (strcmp(line, "[Group3]") == 0)
+				group3Start = numRead;
 			while ((numRead < MaxFuncs) && ReadLine(line, buffPos, buffLen, eof,
 				hFile, buff, read, commentChar, section))
 				if (LineToPair(pairs[numRead], line))
 					++numRead;
 			if (numRead >= MaxFuncs)
 				while (ReadLine(line, buffPos, buffLen, eof,
-					hFile, buff, read, commentChar, section)) {
-				}
+					hFile, buff, read, commentChar, section)) {	}
 		}
 		else if (initToolbar &&
 			strcmp(line, "[Toolbar]") == 0)

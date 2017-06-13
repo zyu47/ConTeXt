@@ -79,7 +79,11 @@ MenuManager::~MenuManager()
 		delete [] m_funcItems;
 		m_funcItems = NULL;
 	}
-
+	for (int gp_no = 0; gp_no != FuncsGroupNo; ++gp_no)
+	{
+		delete gp_names[gp_no];
+		gp_names[gp_no] = NULL;
+	}
 	// To please Lint, let's NULL these handles and pointers
 	m_hNotepad = NULL;
 	m_hInst = NULL;
@@ -89,6 +93,16 @@ MenuManager* MenuManager::getInstance()
 {
 	return s_menuManager;
 }
+
+void MenuManager::deleteInstance()
+{
+	if (s_menuManager)
+	{
+		delete s_menuManager;
+		s_menuManager = NULL;
+	}
+}
+
 
 MenuManager::MenuManager(HWND hNotepad, HINSTANCE hInst) ://, runScriptFunc runScript) :
 	//m_runScript (runScript),	
@@ -236,8 +250,24 @@ void MenuManager::refreshScriptsMenu(int gp_no)
 	idx_t position = 0;
 
 	const ConTeXtEditU* contextEdit = ConTeXtEditU::getInstance();
-	int func_no = gp_no * funcs_per_group;
-	for (; func_no != (gp_no+1) * funcs_per_group; ++func_no)
+	//int func_no = gp_no * funcs_per_group;
+	size_t start, end;
+	if (gp_no == 0)
+	{
+		start = 0;
+		end = m_group2Start;
+	}
+	else if (gp_no == 1)
+	{
+		start = m_group2Start;
+		end = m_group3Start;
+	}
+	else
+	{
+		start = m_group3Start;
+		end = m_funcItemCount;
+	}
+	for (size_t func_no = start; func_no != end; ++func_no)
 	{
 		//InsertMenuA(m_hScriptsMenu, position, MF_BYCOMMAND | MF_STRING | MF_UNCHECKED, m_scriptsMenuManager->currentID(), std::to_string(i).c_str());
 		//++position;
@@ -269,7 +299,7 @@ void MenuManager::refreshScriptsMenu(int gp_no)
 		++position;
 		++(*m_scriptsMenuManager);
 	}
-	if (contextEdit->numRead < (gp_no + 2) * funcs_per_group)
+	/*if (contextEdit->numRead < (gp_no + 2) * funcs_per_group)
 	{
 		for (; func_no != m_funcItemCount; ++func_no)
 		{
@@ -284,7 +314,7 @@ void MenuManager::refreshScriptsMenu(int gp_no)
 			++position;
 			++(*m_scriptsMenuManager);
 		}
-	}
+	}*/
 	//DrawMenuBar(m_hNotepad);
 }
 
@@ -293,7 +323,9 @@ void MenuManager::loadConfig()
 	ConTeXtEditU* contextEdit_ins = ConTeXtEditU::getInstance();
 	contextEdit_ins->ReadConfig();
 	m_funcItemCount = contextEdit_ins->numRead;
-	funcs_per_group = static_cast<int>(m_funcItemCount / FuncsGroupNo);
+	m_group2Start = contextEdit_ins->group2Start;
+	m_group3Start = contextEdit_ins->group3Start;
+	//funcs_per_group = static_cast<int>(m_funcItemCount / FuncsGroupNo);
 
 	for (int gp_no = 0; gp_no != FuncsGroupNo; ++gp_no)
 		refreshScriptsMenu(gp_no);
@@ -526,7 +558,7 @@ FuncItem* MenuManager::getFuncItemArray(int *nbF, ItemVectorTD items)
 	// Remove one from the count of menu items if the list is empty
 	// as we'll only have one separator
 	//*nbF =  (int)(menuItems.size() + items.size() + (menuItems.empty() ? 0 : 1)) + contextEdit->numRead;
-	*nbF = items.size() + 1;
+	*nbF = items.size();
 	m_funcItemCount = (size_t)*nbF;
 
 	// WARNING: If getFuncItemArray is called twice, we'll leak memory!
@@ -1007,7 +1039,9 @@ void MenuManager::idsInitialised()
 */
 	const ConTeXtEditU* contextEdit_ins = ConTeXtEditU::getInstance();
 	m_funcItemCount = contextEdit_ins->numRead;
-	funcs_per_group = static_cast<int>(m_funcItemCount / FuncsGroupNo);
+	m_group2Start = contextEdit_ins->group2Start;
+	m_group3Start = contextEdit_ins->group3Start;
+	//funcs_per_group = static_cast<int>(m_funcItemCount / FuncsGroupNo);
 
 	if (::SendMessage(m_hNotepad, NPPM_ALLOCATESUPPORTED, 0, 0) == TRUE)
 	{

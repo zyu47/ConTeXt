@@ -24,6 +24,15 @@ public:
 	static void SurroundSelection(char* leftText, char* rightText);
 	static void ApplyPair(Pair pair);
 	static ConTeXtEditU* getInstance() { return s_contextEditU; }
+	static void deleteInstance()
+	{
+		if (s_contextEditU)
+		{
+			delete s_contextEditU;
+			s_contextEditU = NULL;
+		}
+	}
+
 	void EditConfig();
 	/*
 	static void Func00() { ApplyPair(pairs[0]); }
@@ -134,7 +143,7 @@ public:
 	bool LineToPair(Pair &pair, char* line);
 	void LineToToolbar(char* line, DWORD &maxFnameLen);
 	void LineToTag(char* line);
-	void(*Funcs[MaxFuncs])();
+	//void(*Funcs[MaxFuncs])();
 
 	void replaceTag() { //Tag* tag_ins = Tag::getinstance();
 		tag_ins.replace(); }
@@ -142,11 +151,14 @@ public:
 
 	static Pair pairs[MaxFuncs];
 	size_t numRead;
+	size_t group2Start;
+	size_t group3Start;
 
 private:
 	static ConTeXtEditU* s_contextEditU;
 	static HWND hSci;
 	HWND hNpp;
+
 
 	bool initToolbar;
 

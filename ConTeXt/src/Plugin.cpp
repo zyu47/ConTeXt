@@ -357,6 +357,13 @@ void beNotified(SCNotification *scn)
 		case SCN_CHARADDED:
 			break;
 			//MessageBox(0, L"char added", L"muhaha", MB_OK);
+
+		case NPPN_SHUTDOWN:
+		{
+			ConTeXtEditU::deleteInstance();
+			MenuManager::deleteInstance();
+		}
+		break;
 	}
 }
 
