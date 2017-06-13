@@ -30,16 +30,19 @@
 #include <list>
 #include <memory>
 #include <atlstr.h>
-
+using namespace std;
 typedef  std::basic_string<TCHAR>	tstring;
 typedef size_t idx_t;
-
+struct Constants
+{
+	static const string SEP;
+};
 #define IDX_MAX SIZE_MAX
 #define MaxKeyLen 50
 #define MaxValueLen 1024
 #define MaxBuffLen 1024
 #define MaxLineLen 2049
-#define MaxFuncs 120
+#define MaxFuncs 1000
 #define MaxIndent 80
 #define KeyNotFoundMsgLen 40
 

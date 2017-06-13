@@ -288,16 +288,30 @@ void MenuManager::refreshScriptsMenu(int gp_no)
 			// Insert the submenu if it's new
 			//if (result.second)
 			//{
-		InsertMenuA(m_hScriptsMenu[gp_no],
-			position,
-			MF_BYCOMMAND | MF_STRING | MF_UNCHECKED,
-			m_scriptsMenuManager->currentID(),
-			contextEdit->pairs[func_no].name);
+		if (Constants::SEP.compare(contextEdit->pairs[func_no].name) == 0)
+		{
+			//this is a line separator
+			InsertMenu(m_hScriptsMenu[gp_no],
+				position++,
+				MF_BYCOMMAND | MF_SEPARATOR,
+				0,
+				NULL
+				);
+		}
+		else
+		{
+			//this is an actual command
+			InsertMenuA(m_hScriptsMenu[gp_no],
+				position++,
+				MF_BYCOMMAND | MF_STRING | MF_UNCHECKED,
+				m_scriptsMenuManager->currentID(),
+				contextEdit->pairs[func_no].name.c_str());
 
-		funcs_map[gp_no].insert(std::pair<idx_t, size_t>(m_scriptsMenuManager->currentID(), func_no));
+			funcs_map[gp_no].insert(std::pair<idx_t, size_t>(m_scriptsMenuManager->currentID(), func_no));
 
-		++position;
-		++(*m_scriptsMenuManager);
+			//++position;
+			++(*m_scriptsMenuManager);
+		}
 	}
 	/*if (contextEdit->numRead < (gp_no + 2) * funcs_per_group)
 	{

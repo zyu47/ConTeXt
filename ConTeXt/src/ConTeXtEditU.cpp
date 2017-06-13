@@ -160,7 +160,7 @@ void ConTeXtEditU::ClearPairs()
 //)
 //END LoadBitmap;
 
-void ConTeXtEditU::SurroundSelection(char* leftText, char* rightText)
+void ConTeXtEditU::SurroundSelection(const char* leftText, const char* rightText)
 {
 	::SendMessage(hSci, SCI_BEGINUNDOACTION, 0, 0);
 	int numSel = static_cast<int32_t>(::SendMessage(hSci, SCI_GETSELECTIONS, 0, 0));
@@ -179,7 +179,7 @@ void ConTeXtEditU::SurroundSelection(char* leftText, char* rightText)
 void ConTeXtEditU::ApplyPair(Pair pair)
 {
 	//(*Surround currently selected text in the current Scintilla view with a pair of tags. *)
-	SurroundSelection(pair.left, pair.right);
+	SurroundSelection(pair.left.c_str(), pair.right.c_str());
 }
 
 //
@@ -272,6 +272,7 @@ void ConTeXtEditU::UnescapeStr(char* str)
 {
 	/*(*Process line replacing escaped characters with their literal equivalents.
 		* Unescaped string is shorter or of equal length, null - terminated. *)*/
+	string res;
 	int i = 0;
 	int c = 0;
 
@@ -319,7 +320,14 @@ bool ConTeXtEditU::LineToPair(Pair &pair, char* line)
 	while ((line[eqPos] != '\0') & (line[eqPos] != '='))
 		++eqPos;
 	if (line[eqPos] == '\0')
+	{
+		if (Constants::SEP.compare(line) == 0)
+		{
+			pair.name = line;
+			return TRUE;
+		}
 		return FALSE;
+	}
 
 	selPos = eqPos + 1;
 	while ((line[selPos] != '\0') & (line[selPos] != '|'))
@@ -329,19 +337,29 @@ bool ConTeXtEditU::LineToPair(Pair &pair, char* line)
 	len = selPos + 1;
 	while (line[len] != '\0')
 		++len;
-	strncpy_s(pair.name, line, eqPos);
-	pair.name[eqPos] = '\0';
-	strncpy_s(pair.left, line+eqPos+1, selPos - eqPos - 1);
-	pair.left[selPos- eqPos -1] = '\0';
-	strncpy_s(pair.right, line + selPos + 1, len - selPos);
+
+	char name[MaxKeyLen];
+	char left[MaxValueLen];
+	char right[MaxValueLen];
+	strncpy_s(name, line, eqPos);
+	name[eqPos] = '\0';
+	strncpy_s(left, line+eqPos+1, selPos - eqPos - 1);
+	left[selPos- eqPos -1] = '\0';
+	strncpy_s(right, line + selPos + 1, len - selPos);
+	right[len - selPos] = '\0';
+	
+	UnescapeStr(left);
+	UnescapeStr(right);
+	
+	pair.name = name;
+	pair.left = left;
+	pair.right = right;
 	//if (strcmp("Ornate Arabic Parens", pair.name) == 0)
 	//{
 	//	char buff[100];
 	//	sprintf_s(buff, "left is: %s\nright is :%s", pair.left, pair.right);
 	//	MessageBox(hNpp, CA2T(buff), L"ornate", MB_OK);
 	//}
-	UnescapeStr(pair.left);
-	UnescapeStr(pair.right);
 
 	return TRUE;
 }

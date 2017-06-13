@@ -16,3 +16,5 @@
 */
 
 #include "StdAfx.h"
+
+const string Constants::SEP = "---";

@@ -9,9 +9,12 @@ struct Pair
 {
 	Pair() {}
 	//Pair(TCHAR *name, TCHAR* left, TCHAR* right) :name(name), left(left), right(right) {}
-	char name[MaxKeyLen];
-	char left[500];
-	char right[500];
+	/*char name[MaxKeyLen];
+	char left[MaxValueLen];
+	char right[MaxValueLen];*/
+	string name;
+	string left;
+	string right;
 };
 
 class ConTeXtEditU
@@ -21,7 +24,7 @@ public:
 	ConTeXtEditU(HWND hNotePad, HWND hSCI, HINSTANCE hInst);
 	static ConTeXtEditU* create(HWND hNotepad, HWND hSCI, HINSTANCE hInst);
 	void ClearPairs();
-	static void SurroundSelection(char* leftText, char* rightText);
+	static void SurroundSelection(const char* leftText, const char* rightText);
 	static void ApplyPair(Pair pair);
 	static ConTeXtEditU* getInstance() { return s_contextEditU; }
 	static void deleteInstance()
