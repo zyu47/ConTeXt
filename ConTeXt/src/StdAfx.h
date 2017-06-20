@@ -37,6 +37,8 @@ struct Constants
 {
 	static const string SEP;
 };
+
+
 #define IDX_MAX SIZE_MAX
 #define MaxKeyLen 50
 #define MaxValueLen 1024

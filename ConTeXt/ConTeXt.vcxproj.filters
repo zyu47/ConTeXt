@@ -16,6 +16,9 @@
     <Filter Include="Scintilla">
       <UniqueIdentifier>{e44879ed-8f3f-4dfc-a15d-4dd83d369122}</UniqueIdentifier>
     </Filter>
+    <Filter Include="tinyxml">
+      <UniqueIdentifier>{5b962406-6969-405a-885b-dcb92add174e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ThirdParty\Scintilla\lexlib\Accessor.cxx">
@@ -26,9 +29,6 @@
     </ClCompile>
     <ClCompile Include="..\ThirdParty\Scintilla\lexlib\WordList.cxx">
       <Filter>Scintilla</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ConfigFile.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ConTeXtEditU.cpp">
       <Filter>Source Files</Filter>
@@ -57,8 +57,17 @@
     <ClCompile Include="src\Tag.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\WcharMbcsConverter.cpp">
+    <ClCompile Include="src\ContextMenu.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\tinyxml\tinyxml.cpp">
+      <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\tinyxml\tinyxmlerror.cpp">
+      <Filter>tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\tinyxml\tinyxmlparser.cpp">
+      <Filter>tinyxml</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -72,9 +81,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ConfigFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ConTeXtEditU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -96,17 +102,17 @@
     <ClInclude Include="src\NppAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Tag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\WcharMbcsConverter.h">
+    <ClInclude Include="src\ContextMenu.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\tinyxml\tinyxml.h">
+      <Filter>tinyxml</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -23,7 +23,7 @@ public:
 
 	ConTeXtEditU(HWND hNotePad, HWND hSCI, HINSTANCE hInst);
 	static ConTeXtEditU* create(HWND hNotepad, HWND hSCI, HINSTANCE hInst);
-	void ClearPairs();
+	//void ClearPairs();
 	static void SurroundSelection(const char* leftText, const char* rightText);
 	static void ApplyPair(Pair pair);
 	static ConTeXtEditU* getInstance() { return s_contextEditU; }
@@ -152,11 +152,11 @@ public:
 		tag_ins.replace(); }
 
 
-	static Pair pairs[MaxFuncs];
+	static vector<Pair> pairs;
 	size_t numRead;
-	size_t group2Start;
-	size_t group3Start;
-
+	vector<size_t> groupStarts;
+	vector<string> groupNames;
+	size_t numGroups;
 private:
 	static ConTeXtEditU* s_contextEditU;
 	static HWND hSci;
@@ -187,5 +187,7 @@ private:
 	TCHAR configDir[MAX_PATH];
 	TCHAR IniFileDir[MAX_PATH];
 	TCHAR IniFileName[100] = TEXT("ConTeXtEdit.ini");
+
+	bool isCommandSession;
 
 };

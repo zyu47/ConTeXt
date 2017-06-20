@@ -4,7 +4,7 @@
 
 #include "StdAfx.h"
 #include "StdAfx.h"
-#include "PluginInterface.h"
+//#include "PluginInterface.h"
 #include "Scintilla.h"
 
 
@@ -15,15 +15,15 @@ struct Tag
 	void ShowMsg(const char* );
 	void replace();
 	bool GetKey();
-	void PasteValue(long int* , std::string &, long int* , long int* );
+	void PasteValue(long int* , string &, long int* , long int* );
 	long int GetTextRange(long int*, long int*, char*);
-	void InsertBuff(long int*, std::string &, long int*, long int*);
+	void InsertBuff(long int*, string &, long int*, long int*);
 	int InsertEol(long int*);
 	void PasteIndent(long int*);
 	void PasteChar(long int*, char);
 	void Tag::PasteByTab(long int *to);
 	void Tag::PasteByPaste(long int *to);
-	std::map<std::string, std::string> tags;
+	map<string, string> tags;
 private:
 	HWND hSci;
 	HWND hNpp;
@@ -33,7 +33,7 @@ private:
 	const char* NoTagsMsg = "No tags defined.";
 	long int pos;
 	char key[MaxKeyLen];
-	std::map<std::string, std::string>::iterator tag;
+	map<string, string>::iterator tag;
 	long int posLeft;
 	long int posRight;
 	long int line;

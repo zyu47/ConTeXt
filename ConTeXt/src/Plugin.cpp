@@ -20,7 +20,8 @@
 #include "PluginInterface.h"
 #include "Version.h"
 #include "Menumanager.h"
-#include "ConfigFile.h"
+#include "ContextMenu.h"
+//#include "ConfigFile.h"
 #include "ConTeXtEditU.h"
 #include "Tag.h"
 
@@ -41,7 +42,7 @@ static bool g_infoSet = false;
 HWND g_ConTeXtWindow = nullptr;
 HWND g_NppWindow = nullptr;
 HWND g_SCI = nullptr;
-WCHAR g_SkinsPath[MAX_PATH] = {0};
+//WCHAR g_SkinsPath[MAX_PATH] = {0};
 /*
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -218,58 +219,48 @@ void loadConfig()
 	MenuManager::getInstance()->loadConfig();
 }
 
+void updateContextMenu()
+{
+	MenuManager::getInstance()->updateContextMenu();
+	MessageBox(nppData._nppHandle, L"Please restart Notepad++", L"ConTeXt", MB_OK);
+}
+
+void removeContextMenu()
+{
+	MenuManager::getInstance()->removeContextMenu();
+	MessageBox(nppData._nppHandle, L"Please restart Notepad++", L"ConTeXt", MB_OK);
+}
+
+void editContextXML()
+{
+	modifyContextMenu mc(nppData._nppHandle);
+	mc.editXML();
+}
+
 static FuncItem* getGeneratedFuncItemArray(int *nbF)
 {
 
 	MenuManager* menuManager = MenuManager::getInstance();
 
 	MenuManager::ItemVectorTD items;
-	//items.reserve(8);
-	//idx_t stopScriptIndex;
-	//idx_t dynamicStartIndex;
-	//idx_t scriptsMenuIndex;
-	//idx_t runPreviousIndex;
 
-	//items.push_back(std::pair<tstring, void(*)()>(_T("New Script"), newScript));
-	//items.push_back(std::pair<tstring, void(*)()>(_T("Show Console"), showConsole));
-
-	//items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
-
-	//items.push_back(std::pair<tstring, void(*)()>(_T("Stop Script"), stopScript));
+	items.push_back(pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
+	items.push_back(pair<tstring, void(*)()>(_T("Replace tags"), replace));
 	//stopScriptIndex = items.size() - 1;
 
-	//items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
-
-
-
-	//items.push_back(std::pair<tstring, void(*)()>(_T("Run Previous Script"), previousScript));
-	//runPreviousIndex = items.size() - 1;
-
-	//items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
-	//scriptsMenuIndex = items.size() - 1;
-
-
-
-	//items.push_back(std::pair<tstring, void(*)()>(_T("Configuration"), showShortcutDlg));
-	// Add dynamic scripts above the Configuration option - an extra separator will automatically
-	// be added to the end of the list, if there are items in the dynamic menu
-	//dynamicStartIndex = items.size() - 1;
-
-	//items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
-	//items.push_back(std::pair<tstring, void(*)()>(_T("Context-Help"), doHelp));
-	items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
-	items.push_back(std::pair<tstring, void(*)()>(_T("Replace tags"), replace));
-	//stopScriptIndex = items.size() - 1;
-
-	items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
-	items.push_back(std::pair<tstring, void(*)()>(_T("Edit config"), editConfig));
-	items.push_back(std::pair<tstring, void(*)()>(_T("Load config"), loadConfig));
+	items.push_back(pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
+	items.push_back(pair<tstring, void(*)()>(_T("Edit config"), editConfig));
+	items.push_back(pair<tstring, void(*)()>(_T("Load config"), loadConfig));
 
 	//runPreviousIndex = items.size() - 1;
 
-	items.push_back(std::pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
+	items.push_back(pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
 	//scriptsMenuIndex = items.size() - 1;
-	items.push_back(std::pair<tstring, void(*)()>(_T("About"), About));
+	items.push_back(pair<tstring, void(*)()>(_T("Update Context Menu"), updateContextMenu));
+	items.push_back(pair<tstring, void(*)()>(_T("Remove Context Menu"), removeContextMenu));
+	items.push_back(pair<tstring, void(*)()>(_T("Edit Context XML"), editContextXML));
+	items.push_back(pair<tstring, void(*)()>(_T("--"), reinterpret_cast<void(*)()>(NULL)));
+	items.push_back(pair<tstring, void(*)()>(_T("About"), About));
 	//dynamicStartIndex = 0; //items.size() - 1;
 
 	FuncItem* funcItems = menuManager->getFuncItemArray(nbF, items);
@@ -329,7 +320,7 @@ void setInfo(NppData data)
 	//strcpy_s(g_pluginDir, MAX_PATH, WcharMbcsConverter::tchar2char(g_tPluginDir).get());
 	wcstombs(g_pluginDir, g_tPluginDir, wcslen(g_tPluginDir) + 1);
 
-	ConfigFile::create(g_tConfigDir, g_tPluginDir, reinterpret_cast<HINSTANCE>(g_hModule));
+	//ConfigFile::create(g_tConfigDir, g_tPluginDir, reinterpret_cast<HINSTANCE>(g_hModule));
 	ConTeXtEditU::create(nppData._nppHandle, g_SCI, reinterpret_cast<HINSTANCE>(g_hModule));
 	MenuManager::create(nppData._nppHandle, reinterpret_cast<HINSTANCE>(g_hModule));// , runScript);
 
@@ -350,7 +341,6 @@ void beNotified(SCNotification *scn)
 			//menuManager->idsInitialised();
 			//menuManager->stopScriptEnabled(false);
 			//menuManager->initPreviousScript();
-
 		}
 		break;
 
@@ -378,8 +368,12 @@ LRESULT messageProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//mbstowcs(wtext, s, strlen(s) + 1);//Plus null
 	//LPWSTR ptr = wtext;
 	//for (int i = 0; i <= 100; ++i)
-	//	OutputDebugString(ptr);
+	////	OutputDebugString(ptr);
 
+	//wchar_t buffer[256];
+	//wsprintfW(buffer, L"%d", uMsg);
+	//if (uMsg != 3 && uMsg != 5)
+	//	MessageBox(0, buffer, L"ConTeXt", MB_OK);
 
 	switch (uMsg)
 	{

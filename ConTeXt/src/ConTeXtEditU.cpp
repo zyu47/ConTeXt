@@ -18,11 +18,11 @@
 //
 ConTeXtEditU* ConTeXtEditU::s_contextEditU = NULL;
 
-Pair ConTeXtEditU::pairs[MaxFuncs];
+vector<Pair> ConTeXtEditU::pairs;
 HWND ConTeXtEditU::hSci;
 
 
-//std::map<char*, char*> ConTeXtEditU::Tags;
+//map<char*, char*> ConTeXtEditU::Tags;
 
 ConTeXtEditU* ConTeXtEditU::create(HWND hNotepad, HWND hSCI, HINSTANCE hInst)
 {
@@ -139,15 +139,16 @@ ConTeXtEditU::ConTeXtEditU(HWND hNotepad, HWND hSCI, HINSTANCE hInst): tag_ins(h
 	*/
 }
 
-void ConTeXtEditU::ClearPairs()
-{
-	for (int i = 0; i < MaxFuncs; ++i)
-	{
-		pairs[i].name[0] = '\0';
-		pairs[i].left[0] = '\0';
-		pairs[i].right[0] = '\0';
-	}
-}
+//void ConTeXtEditU::ClearPairs()
+//{
+//	/*for (int i = 0; i < MaxFuncs; ++i)
+//	{
+//		pairs[i].name[0] = '\0';
+//		pairs[i].left[0] = '\0';
+//		pairs[i].right[0] = '\0';
+//	}*/
+//	
+//}
 
 //PROCEDURE LoadBitmap(VAR fname : ARRAY OF Npp.Char) : Win.HBITMAP;
 //(*Load a bitmap image from the given file name and return the handle. *)
@@ -427,7 +428,7 @@ void ConTeXtEditU::LineToTag(char* line)
 			strncpy_s(value, line + eqPos + 1, len - eqPos);
 			strncpy_s(key, line, eqPos);
 			//key[eqPos] = '\0';
-			tag_ins.tags.insert(std::pair<std::string, std::string>(std::string(key), std::string(value)));
+			tag_ins.tags.insert(pair<string, string>(string(key), string(value)));
 		}
 	}
 }
@@ -460,12 +461,16 @@ void ConTeXtEditU::ReadConfig()//VAR numRead : INTEGER; initToolbar: BOOLEAN)
 	LPDWORD read = &buffLen;	//VAR read : Win.DWORD;
 
 	tag_ins.tags.clear();
-	ClearPairs();
+	//ClearPairs();
+	pairs.clear();
+	groupStarts.clear();
+	groupNames.clear();
 	//oberonRTS.Collect;
 	eof= FALSE;
 	buffPos= 0;
 	buffLen= 0;
 	numRead= 0;
+	numGroups = 0;
 	//StrU.AppendC(configDir, '\');
 	configDirLen = wcslen(configDir);
 	maxFnameLen= MAX_PATH;
@@ -483,31 +488,37 @@ void ConTeXtEditU::ReadConfig()//VAR numRead : INTEGER; initToolbar: BOOLEAN)
 	}
 
 	while (section)
-		/*if (strcmp(line, "[commands]") == 0)
+		if (strcmp(line, "[Commands]") == 0)
 		{
-			while (readline(line, buffpos, bufflen, eof,
-				hfile, buff, read, commentchar, section)) {	}
-		}
-		else */
-		if (strcmp(line, "[Group1]") == 0 ||
-			strcmp(line, "[Group2]") == 0 ||
-			strcmp(line, "[Group3]") == 0 )
-		{
-			//(*read menu items *)
-			if (strcmp(line, "[Group2]") == 0)
-				group2Start = numRead;
-			if (strcmp(line, "[Group3]") == 0)
-				group3Start = numRead;
-			while ((numRead < MaxFuncs) && ReadLine(line, buffPos, buffLen, eof,
-				hFile, buff, read, commentChar, section))
-				if (LineToPair(pairs[numRead], line))
-					++numRead;
-			if (numRead >= MaxFuncs)
+			while (section) 
+			{
+				if (strcmp(line, "[Commands]") != 0)
+				{
+					groupNames.push_back(string(line));
+					groupNames[numGroups].erase(groupNames[numGroups].begin(), groupNames[numGroups].begin()+1); //remove [
+					groupNames[numGroups].erase(groupNames[numGroups].end()-1, groupNames[numGroups].end()); // remove ]
+					groupStarts.push_back(numRead);
+					++numGroups;
+				}
 				while (ReadLine(line, buffPos, buffLen, eof,
-					hFile, buff, read, commentChar, section)) {	}
+					hFile, buff, read, commentChar, section))
+				{
+					pairs.push_back(Pair());
+					if (LineToPair(pairs[numRead], line))
+						++numRead;
+				}
+				/*if (numRead >= MaxFuncs)
+					while (ReadLine(line, buffPos, buffLen, eof,
+						hFile, buff, read, commentChar, section)) {
+					}*/
+				if (strcmp(line, "[CommandsEnd]") == 0)
+				{
+					groupStarts.push_back(numRead);
+					break;
+				}
+			}
 		}
-		else if (initToolbar &&
-			strcmp(line, "[Toolbar]") == 0)
+		else if (initToolbar &&	strcmp(line, "[Toolbar]") == 0)
 		{
 			//(*read toolbar items *)
 			while (ReadLine(line, buffPos, buffLen, eof,

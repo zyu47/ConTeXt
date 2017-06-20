@@ -97,7 +97,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;_USRDLL;CONTEXT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;$(SolutionDir)ThirdParty\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -113,7 +113,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_WINDOWS;_USRDLL;CONTEXT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;$(SolutionDir)ThirdParty\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -131,7 +131,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;_USRDLL;CONTEXT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;$(SolutionDir)ThirdParty\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,7 +151,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_WINDOWS;_USRDLL;CONTEXT_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ThirdParty\NotepadPlusPlus;$(SolutionDir)ThirdParty\Scintilla\lexlib;$(SolutionDir)ThirdParty\Scintilla\include;$(SolutionDir)ThirdParty\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,8 +165,16 @@
     <ClCompile Include="..\ThirdParty\Scintilla\lexlib\Accessor.cxx" />
     <ClCompile Include="..\ThirdParty\Scintilla\lexlib\LexerBase.cxx" />
     <ClCompile Include="..\ThirdParty\Scintilla\lexlib\WordList.cxx" />
-    <ClCompile Include="src\ConfigFile.cpp" />
+    <ClCompile Include="..\ThirdParty\tinyxml\tinyxml.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\tinyxml\tinyxmlerror.cpp" />
+    <ClCompile Include="..\ThirdParty\tinyxml\tinyxmlparser.cpp" />
     <ClCompile Include="src\ConTeXtEditU.cpp" />
+    <ClCompile Include="src\ContextMenu.cpp" />
     <ClCompile Include="src\DynamicIDManager.cpp" />
     <ClCompile Include="src\Lexer.cpp" />
     <ClCompile Include="src\MenuManager.cpp" />
@@ -175,7 +183,6 @@
     <ClCompile Include="src\Plugin.cpp" />
     <ClCompile Include="src\StdAfx.cpp" />
     <ClCompile Include="src\Tag.cpp" />
-    <ClCompile Include="src\WcharMbcsConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Exports.def" />
@@ -184,18 +191,17 @@
     <ResourceCompile Include="src\Plugin.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ConfigFile.h" />
+    <ClInclude Include="..\ThirdParty\tinyxml\tinyxml.h" />
     <ClInclude Include="src\ConTeXtEditU.h" />
+    <ClInclude Include="src\ContextMenu.h" />
     <ClInclude Include="src\DynamicIDManager.h" />
     <ClInclude Include="src\IDAllocator.h" />
     <ClInclude Include="src\Lexer.h" />
     <ClInclude Include="src\MenuManager.h" />
     <ClInclude Include="src\NotepadPPU.h" />
     <ClInclude Include="src\NppAllocator.h" />
-    <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\StdAfx.h" />
     <ClInclude Include="src\Tag.h" />
-    <ClInclude Include="src\WcharMbcsConverter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

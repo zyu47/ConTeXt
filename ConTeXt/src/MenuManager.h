@@ -5,6 +5,8 @@
 //#include "PythonScript.h"
 #include "Lexer.h"
 
+#include "ContextMenu.h"
+
 #endif
 
 struct ShortcutKey;
@@ -26,7 +28,7 @@ public:
 
 	~MenuManager();
 
-	typedef std::vector<std::pair<tstring, void (*)()> > ItemVectorTD;
+	typedef vector<pair<tstring, void (*)()> > ItemVectorTD;
 //	typedef void (*runScriptIDFunc)(idx_t);
 //	typedef void(*runScriptFunc)(const char *, bool, HANDLE, bool);
 
@@ -58,7 +60,11 @@ public:
 
 	//void reconfigure();
 
-	void refreshScriptsMenu(int);
+	void refreshScriptsMenu(size_t);
+
+	void updateContextMenu();
+	void removeContextMenu();
+
 	//int funcs_per_group;
 
 	//void configureToolbarIcons();
@@ -74,9 +80,9 @@ public:
 
 	void idsInitialised();
 
-	bool inDynamicRange(idx_t commandID);
+	//bool inDynamicRange(idx_t commandID);
 	//bool inToolbarRange(idx_t commandID);
-	bool inFixedRange(idx_t commandID);
+	//bool inFixedRange(idx_t commandID);
 	
 
 	BOOL processWmCommand(WPARAM wParam, LPARAM lParam);
@@ -87,13 +93,14 @@ public:
 	
 	void loadConfig();
 
+
 private:
 	MenuManager(); // default constructor disabled
 
 	MenuManager(HWND hNotepad, HINSTANCE hInst);// , runScriptFunc runScript);
 
 	HMENU getOurMenu();
-	//bool findScripts(HMENU hBaseMenu, size_t basePathLength, std::string& path);
+	//bool findScripts(HMENU hBaseMenu, size_t basePathLength, string& path);
 	//void subclassNotepadPlusPlus();
 	
 
@@ -102,12 +109,13 @@ private:
 
 
 	//runScriptFunc m_runScript;
-	std::map<idx_t, size_t> funcs_map[FuncsGroupNo];
-	char* gp_names[FuncsGroupNo];
-	typedef std::set<std::string> MachineScriptNamesTD;
-	typedef std::map<idx_t, std::string> ScriptCommandsTD;
-	typedef std::map<std::string, HMENU> SubmenusTD;
-	typedef std::map<std::pair<tstring, tstring>, idx_t> MenuCommandCacheTD;
+	map<idx_t, size_t> funcs_map;
+	map<size_t, idx_t> funcs_map_reversed;
+	//char* gp_names[FuncsGroupNo];
+	typedef set<string> MachineScriptNamesTD;
+	typedef map<idx_t, string> ScriptCommandsTD;
+	typedef map<string, HMENU> SubmenusTD;
+	typedef map<pair<tstring, tstring>, idx_t> MenuCommandCacheTD;
 	MenuCommandCacheTD m_menuCommandCache;
 	MenuCommandCacheTD m_pluginCommandCache;
 
@@ -117,7 +125,7 @@ private:
 	ScriptCommandsTD m_menuCommands;
 
 	SubmenusTD m_submenus;
-	typedef std::map<int, tstring>  KeyMapTD;
+	typedef map<int, tstring>  KeyMapTD;
 	KeyMapTD m_keyMap;
 
 	//tstring getKeyName(ShortcutKey& sk);
@@ -134,17 +142,17 @@ private:
 	//idx_t		m_runPreviousIndex;
 	//idx_t		m_originalLastCmdIndex;
 	HMENU		m_contextMenu;
-	HMENU		m_hScriptsMenu[FuncsGroupNo];
+	vector<HMENU>		m_hScriptsMenu;
 	HMENU		hPluginMenu;
 	FuncItem*   m_funcItems;
-	size_t		m_funcItemCount;
-	size_t		m_group2Start;
-	size_t		m_group3Start;
+	//size_t		m_funcItemCount;
+	//size_t		m_group2Start;
+	//size_t		m_group3Start;
 
-	std::string m_machineScriptsPath;
-	std::string m_userScriptsPath;
+	string m_machineScriptsPath;
+	string m_userScriptsPath;
 	tstring		m_runLastScriptShortcut;
-	std::string m_previousRunFilename;
+	string m_previousRunFilename;
 
 	IDAllocator* m_idAllocator;
 	DynamicIDManager* m_dynamicMenuManager;
