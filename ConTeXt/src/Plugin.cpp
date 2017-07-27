@@ -25,8 +25,8 @@
 #include "ConTeXtEditU.h"
 #include "Tag.h"
 
-const int WM_QUERY_ConTeXt = WM_APP + 1000;
-const int ConTeXt_QUERY_ID_SKINS_PATH = 4101;
+//const int WM_QUERY_ConTeXt = WM_APP + 1000;
+//const int ConTeXt_QUERY_ID_SKINS_PATH = 4101;
 
 static FuncItem	*funcItem = NULL;
 static NppData nppData;

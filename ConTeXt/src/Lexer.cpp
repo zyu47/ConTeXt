@@ -52,19 +52,22 @@ int ConTeXt::ParseTeXCommand(unsigned int pos, Accessor &styler, char *command)
 	char ch = styler.SafeGetCharAt(pos + 1);
 
 	if (ch == ',' || ch == ':' || ch == ';' || ch == '%') {
-		command[0] = ch;
-		command[1] = 0;
+		command[0] = '\\';
+		command[1] = ch;
+		command[2] = 0;
 		return 1;
 	}
-
+	command[length] = '\\';
+	length++;
 	// find end
 	while (isalpha(ch) && !IsADigit(ch) && ch != '_' && ch != '.' && length<100) {
 		command[length] = ch;
 		length++;
-		ch = styler.SafeGetCharAt(pos + length + 1);
+		ch = styler.SafeGetCharAt(pos + length);
 	}
 
 	command[length] = '\0';
+	length--;
 	if (!length) return 0;
 	return length + 1;
 }
@@ -187,19 +190,7 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 	const WordList& keywords4 = m_WordLists[4];
 	const WordList& keywords5 = m_WordLists[5]; //folder in code 2, open
 	const WordList& keywords6 = m_WordLists[6]; //folder in code 2, close
-	/*
-	for (int i = 0; i != 30; ++i) {
-		const char* p = keywords0.words[i];
-		//wchar_t buffer[256];
-		//wsprintfW(buffer, L"%d", a);
-		//OutputDebugString(buffer);
-		wchar_t wtext[20];
-		mbstowcs(wtext, p, strlen(p) + 1);//Plus null
-										  //mbstowcs(wtext, s, strlen(s) + 1);
-		LPWSTR ptr = wtext;
-		OutputDebugString(ptr);
-	}
-	*/
+
 	length += startPos;
 	styler.StartAt(startPos);
 	styler.StartSegment(startPos);
@@ -504,6 +495,9 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 	
 	Accessor styler(pAccess, nullptr);
 
+	const WordList& keywords5 = m_WordLists[5]; //folder in code 2, open
+	const WordList& keywords6 = m_WordLists[6]; //folder in code 2, close
+
 	//bool foldCompact = TRUE;//styler.GetPropertyInt("fold.compact", 1) != 0;
 	unsigned int endPos = startPos + length;
 	int visibleChars = 0;
@@ -526,51 +520,20 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 			chNext = styler.SafeGetCharAt(i + 1);
 		}
 
-
 		if (ch == '\\') {
 			ParseTeXCommand(i, styler, buffer);
-			levelCurrent += classifyFoldPointTeXPaired(buffer) + classifyFoldPointTeXUnpaired(buffer);
+			//MessageBox(0, CA2T(buffer), L"Context", MB_OK);
+			if (keywords5.InList(buffer))
+				levelCurrent++; // += classifyFoldPointTeXPaired(buffer) + classifyFoldPointTeXUnpaired(buffer);
+			else if (keywords6.InList(buffer))
+				levelCurrent--;
 		}
 
-		if (levelCurrent > SC_FOLDLEVELBASE && ((ch == '\r' || ch == '\n') && (chNext == '\\'))) {
-			ParseTeXCommand(i + 1, styler, buffer);
-			levelCurrent -= classifyFoldPointTeXUnpaired(buffer);
-		}
-		/*
-		char chNext2;
-		char chNext3;
-		char chNext4;
-		char chNext5;
-		chNext2 = styler.SafeGetCharAt(i + 2);
-		chNext3 = styler.SafeGetCharAt(i + 3);
-		chNext4 = styler.SafeGetCharAt(i + 4);
-		chNext5 = styler.SafeGetCharAt(i + 5);
+		//if (levelCurrent > SC_FOLDLEVELBASE && ((ch == '\r' || ch == '\n') && (chNext == '\\'))) {
+		//	ParseTeXCommand(i + 1, styler, buffer);
+		//	levelCurrent -= classifyFoldPointTeXUnpaired(buffer);
+		//}
 
-		bool atEOfold = (ch == '%') &&
-			(chNext == '%') && (chNext2 == '}') &&
-			(chNext3 == '}') && (chNext4 == '-') && (chNext5 == '-');
-
-		bool atBOfold = (ch == '%') &&
-			(chNext == '%') && (chNext2 == '-') &&
-			(chNext3 == '-') && (chNext4 == '{') && (chNext5 == '{');
-
-		if (atBOfold) {
-			levelCurrent += 1;
-		}
-
-		if (atEOfold) {
-			levelCurrent -= 1;
-		}
-		
-		if (ch == '\\' && chNext == '[') {
-			levelCurrent += 1;
-		}
-
-		if (ch == '\\' && chNext == ']') {
-			levelCurrent -= 1;
-		}
-		*/
-		
 		bool foldComment = TRUE;// styler.GetPropertyInt("fold.comment") != 0;
 
 		if (foldComment && atEOL && IsTeXCommentLine(lineCurrent, styler))
@@ -687,7 +650,8 @@ void SCI_METHOD GetLexerName(unsigned int index, char* name, int buflength)
 
 void SCI_METHOD GetLexerStatusText(unsigned int index, WCHAR* desc, int buflength)
 {
-	wcsncpy(desc, L"ConTeXt skin file", buflength);
+	//wcsncpy(desc, L"ConTeXt skin file", buflength);
+	wcsncpy(desc, L"ConTeXt file", buflength);
 	desc[buflength - 1] = L'\0';
 }
 

@@ -49,7 +49,7 @@ public:
 	//static void         deleteInstance();
 
 
-	void stopScriptEnabled(bool enabled);
+	//void stopScriptEnabled(bool enabled);
 
 	FuncItem* getFuncItemArray(int *nbF, ItemVectorTD items);
 	FuncItem* getFuncItems() { return m_funcItems; }
