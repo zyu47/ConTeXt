@@ -7,7 +7,7 @@
 //#include "PluginInterface.h"
 #include "Scintilla.h"
 
-
+///This was adapted from the WebEdit plugin. This module deals with tag replacements.
 struct Tag
 {
 	Tag(HWND SCI, HWND hNotepad) : hSci(SCI), hNpp(hNotepad) {}
@@ -23,7 +23,7 @@ struct Tag
 	void PasteChar(long int*, char);
 	void Tag::PasteByTab(long int *to);
 	void Tag::PasteByPaste(long int *to);
-	map<string, string> tags;
+	map<string, string> tags; ///< mapping from key to values
 private:
 	HWND hSci;
 	HWND hNpp;
@@ -31,23 +31,21 @@ private:
 	const char* KeyNotFoundMsg = "Undefined tag: ";
 	const char* NoKeyMsg = "No tag here.";
 	const char* NoTagsMsg = "No tags defined.";
-	long int pos;
+	long int pos; ///< current caret position
 	char key[MaxKeyLen];
-	map<string, string>::iterator tag;
-	long int posLeft;
-	long int posRight;
+	map<string, string>::iterator tag; ///< Store tags
+	long int posLeft; ///< the left position of the found key
+	long int posRight; ///< the left position of the found key
 	long int line;
-	long int indentBeg;
-	long int indentEnd;
-	char msg[KeyNotFoundMsgLen + MaxKeyLen]; //error message
+	long int indentBeg; ///< the position of indentation start
+	long int indentEnd; ///< the position of indentation stop
+	char msg[KeyNotFoundMsgLen + MaxKeyLen]; ///< error message
 
-	long int indentLen; //(*Really required length.Can be > MaxIndent. *)
-	char indent[MaxIndent + 1];//(*Indentation at line start. *)
+	long int indentLen; ///< Really required length.Can be > MaxIndent.
+	char indent[MaxIndent + 1];///< Indentation at line start. 
 
 	void Tab() { ::SendMessage(hSci, SCI_TAB, 0, 0); }
 	void Paste() { ::SendMessage(hSci, SCI_PASTE, 0, 0); }
-
-
 };
 
 #endif

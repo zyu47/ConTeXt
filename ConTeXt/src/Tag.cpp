@@ -1,15 +1,9 @@
 #include "Tag.h"
 
-
-////(*-------------------------------------------------------------------------- -
-//	*This module deals with tag replacements.It was made as a substitute for
-//	* the very good, but unsupported QuickText plugin.
-//	* -------------------------------------------------------------------------- - *)
-////
-
+/// Return TRUE if 'key' consists of valid tag keys only.
 bool Tag::ValidKey(char* key)
 {
-	//(*Return TRUE if ( 'key' consists of valid tag keys only. *)
+	
 	long int i = 0;
 	while ((i <= MaxKeyLen) && (key[i] != '\0') && isalnum(key[i]))
 		++i;
@@ -19,6 +13,8 @@ bool Tag::ValidKey(char* key)
 void Tag::ShowMsg(const char* msg) {
 	::SendMessage(hSci, SCI_CALLTIPSHOW, pos, reinterpret_cast<LPARAM>(msg));
 }
+
+/// Get the key around caret from editor
 bool Tag::GetKey()
 {
 	long int stop;
@@ -61,6 +57,7 @@ long int Tag::GetTextRange(long int* posLeft, long int* posRight, char *key)
 	return ::SendMessage(hSci, SCI_GETTEXTRANGE, 0, reinterpret_cast<LPARAM>(&tr));
 }
 
+/// Main replace function
 void Tag::replace()
 {
 	//(** Either replace the current tag or jump to the next hotspot. *)
@@ -70,7 +67,7 @@ void Tag::replace()
 		ShowMsg(NoTagsMsg);
 	else if (GetKey())
 	{
-		tag = tags.find(std::string(key));
+		tag = tags.find(std::string(key)); // tag is an iterator
 
 		if (tag != tags.end()) {
 			::SendMessage(hSci, SCI_BEGINUNDOACTION, 0, 0);
@@ -93,29 +90,27 @@ void Tag::replace()
 	}
 }
 
+/*!	Same as InsertText, but only insert text[from..to - 1].
+	Pre: 0 <= from <= to < LEN(text) 
+	pos: insertion position
+	text: the target text that needs to be inserted
+	from/to: determine which part of text needs to be inserted. */
 void Tag::InsertBuff(long int* pos, std::string & text, long int* from, long int* to)
 {
-	//(** Same as InsertText, but only insert text[from..to - 1].
-		//* Pre: 0 <= from <= to < LEN(text) *)
-	//assert(from>=0 && );
 	if (*to - *from > 0)
 	{
 		char * insertion = new char[*to - *from + 1];
-		//char saved;
-		//saved = text[*to];
-		//text[*to] = '\0';
 		size_t len = text.copy(insertion, *to - *from, *from);
 		insertion[len] = '\0';
 		::SendMessage(hSci, SCI_INSERTTEXT, *pos, reinterpret_cast<LPARAM>(insertion));
 	}
-	//text[*to] = saved;
 }
 
 
+/*! Insert EOL at 'pos' according to the current GetEolMode setting.
+	Return the number of characters inserted : 0..2 (0 means error). */
 int Tag::InsertEol (long int* pos)
 {
-	//(** Insert EOL at 'pos' according to the current GetEolMode setting.Return
-	//	* the number of characters inserted : 0..2 (0 means error). *)
 	const char* CRLF = "\r\n";
 	const char* CR = "\r";
 	const char* LF = "\n";
@@ -144,6 +139,7 @@ int Tag::InsertEol (long int* pos)
 	return  res;
 }
 
+/// Paste target text, one character each. Also handles escaped character. 
 void Tag::PasteValue(long int* pastePos, std::string& value, long int* indentBeg, long int* indentEnd)
 {
 	char TabChar = '\t';
@@ -157,7 +153,6 @@ void Tag::PasteValue(long int* pastePos, std::string& value, long int* indentBeg
 		indent[GetTextRange(indentBeg, indentEnd, indent)] = '\0'; 
 
 	pos = *pastePos;
-	//output(pos);
 	while (i != value.size())
 	{
 		if (value[i] == '\\') //(* paste value [c..i - 1] to 'sci' *)
@@ -209,7 +204,7 @@ void Tag::PasteValue(long int* pastePos, std::string& value, long int* indentBeg
 		caretPos = pos;
 	::SendMessage(hSci, SCI_GOTOPOS, caretPos, 0);
 	//(*move the caret about the target position to avoid invalid caret
-	//*placement on subsequent moves with up and)wn keys(wrong column) *)
+	//*placement on subsequent moves with up and down keys(wrong column) *)
 	::SendMessage(hSci, SCI_CHARLEFT, 0 ,0);
 	::SendMessage(hSci, SCI_CHARRIGHT, 0, 0);
 	if (caretPos == 0)
@@ -226,9 +221,10 @@ void Tag::PasteChar(long int* to, char ch)
 	++*to;
 }
 
+/*! Paste indentation characters. 'to' is increased by the pasted amount. 
+The indentation was kept the same with the indentation from the previous line. */
 void Tag::PasteIndent(long int* to)
 {
-	//(*Paste indentation characters. 'to' is increased by the pasted amount. *)
 	long int from, endPos;
 	if (indentLen < MaxIndent)
 	{
@@ -249,7 +245,6 @@ void Tag::PasteIndent(long int* to)
 		indent[GetTextRange(&from, &indentEnd, indent)] = '\0';
 		::SendMessage(hSci, SCI_INSERTTEXT, *to, reinterpret_cast<LPARAM>(indent));
 		*to += indentEnd - from;
-		//ASSERT(to = endPos, 60);
 	}
 }
 
@@ -263,6 +258,7 @@ void Tag::PasteByTab(long int *to)
 	Tab();
 	to += ::SendMessage(hSci, SCI_GETTEXTLENGTH, 0, 0) - prevLen;
 }
+
 void Tag::PasteByPaste(long int *to)
 {
 	//(*Paste something using 'cmd'. 'to' is increased by the pasted amount. *)

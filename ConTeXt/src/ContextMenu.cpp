@@ -1,6 +1,5 @@
 #include "ContextMenu.h"
 
-//modifyContextMenu* modifyContextMenu::s_modifyContextMenu = NULL;
 modifyContextMenu::modifyContextMenu(HWND hNotePad):
 	hNpp(hNotePad),
 	_pXmlFile(NULL)
@@ -26,32 +25,15 @@ modifyContextMenu::modifyContextMenu(HWND hNotePad):
 	}
 }
 
-//modifyContextMenu* modifyContextMenu::create(HWND hNotePad)
-//{
-//	if (s_modifyContextMenu == NULL)
-//		s_modifyContextMenu = new modifyContextMenu(hNotePad);
-//	return s_modifyContextMenu;
-//}
-
-//void modifyContextMenu::deleteInstance()
-//{
-//	if (s_modifyContextMenu != NULL)
-//	{
-//		delete s_modifyContextMenu;
-//		s_modifyContextMenu = NULL;
-//	}
-//}
-
 modifyContextMenu::~modifyContextMenu()
 { 
 	if (_pXmlFile)
 		delete _pXmlFile;
 }
 
+/// Load the right-click menu xml file
 bool modifyContextMenu::loadContextXml()
 {
-	
-	
 	if (_pXmlFile)
 		delete _pXmlFile;
 	userChildCount = 0;
@@ -78,10 +60,9 @@ bool modifyContextMenu::loadContextXml()
 	}
 	countUserItems();
 	return TRUE;
-	/*if (userChildCount != 0)
-		clear();*/
 }
 
+/// Count the number of menu items added by this plugin
 void modifyContextMenu::countUserItems()
 {
 	firstNonUserChild = parent->FirstChildElement(TEXT("Item"));
@@ -112,6 +93,7 @@ void modifyContextMenu::countUserItems()
 	}
 }
 
+/// Remove all context menus added by this plugin
 void modifyContextMenu::clear()
 {
 	for (size_t i = 0; i != userChildCount; ++i)
@@ -124,6 +106,7 @@ void modifyContextMenu::clear()
 	userChildCount = 0;
 }
 
+/// Update context menu xml by adding menu name and the command ID
 bool modifyContextMenu::update(const TCHAR* folderName, idx_t id, const TCHAR* itemName)
 {
 	//<Item FolderName="" id="" ItemNameAs="" User=""/>
@@ -165,6 +148,7 @@ bool modifyContextMenu::update(const TCHAR* folderName, idx_t id, const TCHAR* i
 		return FALSE;
 }
 
+/// Open context xml for editing
 void modifyContextMenu::editXML()
 {
 	::SendMessage(hNpp, NPPM_DOOPEN, 0, reinterpret_cast<LPARAM>(xmlDir));

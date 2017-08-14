@@ -5,6 +5,7 @@
 #include "IDAllocator.h"
 #endif
 
+/// Code was copied from python script plugin.
 class NppAllocator : public IDAllocator
 {
 public:
@@ -14,7 +15,7 @@ public:
 	bool allocate(size_t quantity, idx_t *start);
 
 private:
-	NppAllocator(); // default constructor disabled
+	NppAllocator(); ///< default constructor disabled
 
 	HWND m_hNotepad;
 };

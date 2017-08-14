@@ -3,6 +3,7 @@
 
 class IDAllocator;
 
+/// Code was copied from python script plugin.
 class DynamicIDManager
 {
 public:

@@ -1,4 +1,4 @@
-
+/* Code was copied from python script plugin*/
 #include "stdafx.h"
 
 #include "DynamicIDManager.h"

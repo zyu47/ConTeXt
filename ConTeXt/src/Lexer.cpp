@@ -1,20 +1,3 @@
-/*
-  Copyright (C) 2010-2012 Birunthan Mohanathas <http://poiru.net>
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include "StdAfx.h"
 #include "Lexer.h"
 
@@ -25,27 +8,24 @@ ILexer* ConTeXt::LexerFactory()
 	return new ConTeXt();
 }
 
+/// Determine if a character is considered as a ConTeXt operator
 inline bool ConTeXt::isOperator(char ch) {
 	if (ch >= 0x80 || isalnum(ch)) {
 		return false;
 	}
-
 	if (ch == '*' || ch == '/' || ch == '-' ||
 		ch == '+' || ch == '(' || ch == ')' ||
 		ch == '=' || ch == '{' || ch == '}' ||
 		ch == '~' || ch == '[' || ch == ']' ||
 		ch == ';' || ch == '<' || ch == '>' ||
-		//ch == ',' ||
 		ch == '.' ||
 		ch == '^' || ch == ':' || ch == '#' ||
-		ch == '&' || ch == '|'
-		//|| ch == '!'
-		)
+		ch == '&' || ch == '|' )
 		return true;
 	return false;
 }
 
-
+/// Once a backslash is met, continue reading the following word
 int ConTeXt::ParseTeXCommand(unsigned int pos, Accessor &styler, char *command)
 {
 	int length = 0;
@@ -72,51 +52,6 @@ int ConTeXt::ParseTeXCommand(unsigned int pos, Accessor &styler, char *command)
 	return length + 1;
 }
 
-int ConTeXt::classifyFoldPointTeXPaired(const char* s) {
-	int lev = 0;
-	if (!(isdigit(s[0]) || (s[0] == '.'))) {
-		if (strcmp(s, "autostarttext") == 0 || strncmp(s, "begin", 5) == 0 || strcmp(s, "begstrut") == 0 ||
-			strcmp(s, "dostarttagged") == 0 || strcmp(s, "globalpushreferenceprefix") == 0 ||
-			strncmp(s, "push", 4) == 0 || strcmp(s, "savecolor") == 0 || strcmp(s, "setbuffer") == 0 ||			
-			strncmp(s, "start", 5) == 0 || strcmp(s, "unprotect") == 0 //|| strncmp(s, "Start", 5) == 0 ||
-			//strcmp(s, "documentclass") == 0 || strncmp(s, "if", 2) == 0
-			)
-			lev = 1;
-		if (strcmp(s, "autostoptext") == 0 || strcmp(s, "dostoptagged") == 0 ||strncmp(s, "end", 3) == 0 ||
-			strcmp(s, "globalpopreferenceprefix") == 0 || strncmp(s, "pop", 3) == 0 ||
-			strcmp(s, "protect") == 0 || strcmp(s, "restorecolor") == 0 ||
-			strncmp(s, "stop", 4) == 0 //|| strncmp(s, "Stop", 4) == 0 ||
-			)
-			lev = -1;
-	}
-	return lev;
-}
-
-int ConTeXt::classifyFoldPointTeXUnpaired(const char* s) {
-	int lev = 0;
-	/*
-	if (!(isdigit(s[0]) || (s[0] == '.'))) {
-		if (//strcmp(s, "part") == 0 ||
-			strcmp(s, "chapter") == 0 ||
-			strcmp(s, "section") == 0 ||
-			strcmp(s, "subsection") == 0 ||
-			strcmp(s, "subsubsection") == 0 ||
-			//strcmp(s, "CJKfamily") == 0 ||
-			//strcmp(s, "appendix") == 0 ||
-			//strcmp(s, "Topic") == 0 || strcmp(s, "topic") == 0 ||
-			strcmp(s, "subject") == 0 || strcmp(s, "subsubject") == 0 ||
-			//strcmp(s, "def") == 0 || strcmp(s, "gdef") == 0 || strcmp(s, "edef") == 0 ||
-			//strcmp(s, "xdef") == 0 ||
-			strcmp(s, "framed") == 0 //||
-			//strcmp(s, "frame") == 0 ||
-			//strcmp(s, "foilhead") == 0 || strcmp(s, "overlays") == 0 || strcmp(s, "slide") == 0
-			) {
-			lev = 1;
-		}
-	}*/
-	return lev;
-}
-
 bool ConTeXt::IsTeXCommentLine(int line, Accessor &styler) {
 	int pos = styler.LineStart(line);
 	int eol_pos = styler.LineStart(line + 1) - 1;
@@ -132,8 +67,6 @@ bool ConTeXt::IsTeXCommentLine(int line, Accessor &styler) {
 
 	return false;
 }
-
-
 
 //
 // ILexer
@@ -219,19 +152,11 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 				styler.ColourTo(i, TC_DEFAULT);
 				break;
 
-			//case '[':
-			//	state = TS_SECTION;
-			//	break;
-
 			case '%':
 				styler.ColourTo(i-1, TC_DEFAULT);
 				state = TS_COMMENT;
 				break;
-				/*
-			case '\t':
-			case ' ':
-				break;
-				*/
+
 			case '\\':
 				styler.ColourTo(i - 1, TC_DEFAULT);
 				buffer[0] = '\\';
@@ -240,19 +165,6 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 				break;
 				
 			default:
-				/*
-				if (isalpha(ch) || ch == '\\')
-				{
-					count = 0;
-					digits = 0;
-					buffer[count++] = tolower(ch);
-					state = TS_KEYWORD;
-				}
-				else
-				{
-					state = TS_VALUE;
-				}
-				*/
 				if (isOperator(ch) || isdigit(ch)) {
 					styler.ColourTo(i - 1, TC_DEFAULT);
 					state = TS_VALUE;
@@ -271,20 +183,6 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 				styler.ColourTo(i, TC_DEFAULT);
 			}
 			break;
-
-		/*
-		case TS_SECTION:
-			// Style as section when EOL (or EOF) is reached unless section name has a space
-			switch (ch)
-			{
-			case '\0':
-			case '\n':
-				state = TS_DEFAULT;
-				styler.ColourTo(i - chEOL, TC_SECTION);
-				styler.ColourTo(i, TC_DEFAULT);
-			}
-			break;
-		*/
 
 		case TS_KEYWORD:
 			// Read max. 32 chars into buffer until the equals sign (or EOF/EOL) is met.
@@ -314,56 +212,7 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 			else
 					state = TS_DEFAULT;
 			break;
-/*
-		case TS_OPTION:
-			// Read value into buffer and check if it's valid for cases like StringAlign=RIGHT
-			switch (ch)
-			{
-			case '#':
-				count = 0;
-				styler.ColourTo(i - 1, TC_DEFAULT);
-				state = TS_VARIABLE;
-				break;
 
-			case '\0':
-				// Read the last character if at EOF
-				buffer[count++] = tolower(styler[i++]);
-
-			case '\r':
-			case '\n':
-				while (isspacechar(buffer[count - 1]))
-				{
-					--count;
-				}
-
-				buffer[count] = '\0';
-				count = 0;
-				state = TS_DEFAULT;
-
-				if (options.InList(buffer))
-				{
-					styler.ColourTo(i - chEOL, TC_VALID);
-				}
-				else
-				{
-					styler.ColourTo(i - chEOL, TC_INVALID);
-				}
-				styler.ColourTo(i, TC_DEFAULT);
-				break;
-
-			default:
-				if (count < _countof(buffer))
-				{
-					buffer[count++] = tolower(ch);
-				}
-				else
-				{
-					state = TS_LINEEND;
-				}
-			}
-			break;
-			*/
-			
 		case TS_VALUE:
 			// Read values to highlight variables and bangs
 			if (!isOperator(ch) && !isdigit(ch)) {
@@ -372,107 +221,7 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 				state = TS_DEFAULT;
 			}
 			break;
-/*
-		case TS_BANG:
-			// Highlight bangs
-			switch (ch)
-			{
-			case '\0':
-				buffer[count++] = tolower(styler[i++]);
 
-			case '\n':
-			case ' ':
-			case '[':
-			case ']':
-				buffer[count] = '\0';
-				count = 0;
-				state = (ch == '\n') ? TS_DEFAULT : TS_VALUE;
-
-				// Skip ConTeXt before comparing the bang
-				if (bangs.InList(&buffer[(strncmp(buffer, "ConTeXt", 9) == 0) ? 9 : 0]))
-				{
-					styler.ColourTo(i - chEOL, TC_BANG);
-				}
-				styler.ColourTo(i, TC_DEFAULT);
-				break;
-
-			case '\r':
-				break;
-
-			case '#':
-				count = 0;
-				styler.ColourTo(i - 1, TC_DEFAULT);
-				state = TS_VARIABLE;
-				break;
-
-			default:
-				if (count < _countof(buffer))
-				{
-					buffer[count++] = tolower(ch);
-				}
-				else
-				{
-					state = TS_VALUE;
-				}
-			}
-			break;
-			*/
-			/*
-		case TS_VARIABLE:
-			// Highlight variables
-			switch (ch)
-			{
-			case '\n':
-				state = TS_DEFAULT;
-				styler.ColourTo(i, TC_DEFAULT);
-				break;
-
-			case '\0':
-			case '#':
-				if (count)
-				{
-					buffer[count] = '\0';
-
-					if (variables.InList(buffer))
-					{
-						styler.ColourTo(i, TC_INTVARIABLE);
-					}
-					else
-					{
-						if (buffer[0] == '*' && buffer[count - 1] == '*')
-						{
-							// Escaped variable, don't highlight
-							styler.ColourTo(i, TC_DEFAULT);
-						}
-						else
-						{
-							styler.ColourTo(i, TC_EXTVARIABLE);
-						}
-					}
-
-					count = 0;
-				}
-				state = TS_VALUE;
-				break;
-
-			case ' ':
-			case '[':
-			case ']':
-				state = TS_VALUE;
-				break;
-
-			default:
-				if (count < _countof(buffer))
-				{
-					buffer[count++] = tolower(ch);
-				}
-				else
-				{
-					state = TS_VALUE;
-				}
-			}
-			break;
-			*/
 		case TS_LINEEND:
 			// Apply default style when EOL (or EOF) is reached
 			switch (ch)
@@ -484,9 +233,7 @@ void SCI_METHOD ConTeXt::Lex(unsigned int startPos, int length, int initStyle, I
 			}
 			break;
 		}
-		
 	}
-	
 	styler.Flush();
 }
 
@@ -498,7 +245,6 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 	const WordList& keywords5 = m_WordLists[5]; //folder in code 2, open
 	const WordList& keywords6 = m_WordLists[6]; //folder in code 2, close
 
-	//bool foldCompact = TRUE;//styler.GetPropertyInt("fold.compact", 1) != 0;
 	unsigned int endPos = startPos + length;
 	int visibleChars = 0;
 	int lineCurrent = styler.GetLine(startPos);
@@ -522,19 +268,13 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 
 		if (ch == '\\') {
 			ParseTeXCommand(i, styler, buffer);
-			//MessageBox(0, CA2T(buffer), L"Context", MB_OK);
 			if (keywords5.InList(buffer))
-				levelCurrent++; // += classifyFoldPointTeXPaired(buffer) + classifyFoldPointTeXUnpaired(buffer);
+				levelCurrent++; 
 			else if (keywords6.InList(buffer))
 				levelCurrent--;
 		}
 
-		//if (levelCurrent > SC_FOLDLEVELBASE && ((ch == '\r' || ch == '\n') && (chNext == '\\'))) {
-		//	ParseTeXCommand(i + 1, styler, buffer);
-		//	levelCurrent -= classifyFoldPointTeXUnpaired(buffer);
-		//}
-
-		bool foldComment = TRUE;// styler.GetPropertyInt("fold.comment") != 0;
+		bool foldComment = TRUE;
 
 		if (foldComment && atEOL && IsTeXCommentLine(lineCurrent, styler))
 		{
@@ -554,8 +294,6 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 
 		if (atEOL) {
 			int lev = levelPrev;
-			//if (visibleChars == 0 && foldCompact)
-			//	lev |= SC_FOLDLEVELWHITEFLAG;
 			if ((levelCurrent > levelPrev) && (visibleChars > 0))
 				lev |= SC_FOLDLEVELHEADERFLAG;
 			if (lev != styler.LevelAt(lineCurrent)) {
@@ -566,7 +304,6 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 			visibleChars = 0;
 		}
 
-		//if (!isspacechar(ch))
 		if (isalnum(ch))
 			visibleChars++;
 	}
@@ -575,58 +312,6 @@ void SCI_METHOD ConTeXt::Fold(unsigned int startPos, int length, int initStyle, 
 	int flagsNext = styler.LevelAt(lineCurrent) & ~SC_FOLDLEVELNUMBERMASK;
 	styler.SetLevel(lineCurrent, levelPrev | flagsNext);
 
-	//const WordList& keywords5 = m_WordLists[5]; //folder in code 2, open
-	//const WordList& keywords6 = m_WordLists[6]; //folder in code 2, close
-
-	//length += startPos;
-	//int line = styler.GetLine(startPos);
-
-	//int count = 0;
-	//char buffer[128];
-	////bool startKeyword = 0;
-	//int lev = SC_FOLDLEVELBASE;
-
-	//for (unsigned int i = startPos, isize = (unsigned int)length; i < isize; ++i)
-	//{
-	//	char ch = (i == length - 1) ? '\0' : styler[i];
-
-	//	if (count == 0)
-	//	{
-	//		if (ch == '\n' || ch == '\0') {
-	//			styler.SetLevel(line, lev);
-	//			++line;
-	//		}
-	//		else if(ch == '\\' && (i == startPos || styler[i - 1] == '\n'))
-	//			buffer[count++] = '\\';
-	//	}
-	//	else
-	//	{
-	//		if (!isalpha(styler[i])) {
-	//			buffer[count] = '\0';
-	//			if (keywords5.InList(buffer))
-	//			{
-	//				lev |= SC_FOLDLEVELHEADERFLAG;
-	//				styler.SetLevel(line, lev);
-
-	//				lev |= SC_FOLDLEVELBASE;
-	//				++lev;
-	//				++line;
-	//				i = styler.LineStart(line) - 1;
-	//			}
-	//			else if (keywords6.InList(buffer)) {
-	//				--lev;
-	//				styler.SetLevel(line, lev);
-	//				++line;
-	//				i = styler.LineStart(line) - 1;
-	//			}
-	//			count = 0;
-	//		}
-	//		else
-	//			buffer[count++] = ch;
-	//	}
-	//}
-
-	//styler.Flush();
 }
 
 void* SCI_METHOD ConTeXt::PrivateCall(int operation, void* pointer) {

@@ -42,9 +42,6 @@
     <ClCompile Include="src\MenuManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\NotepadPPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\NppAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,9 +93,6 @@
     <ClInclude Include="src\MenuManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\NotepadPPU.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\NppAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -113,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="..\ThirdParty\tinyxml\tinyxml.h">
       <Filter>tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Version.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
