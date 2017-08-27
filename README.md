@@ -1,5 +1,7 @@
 # ConTeXt
 
+By Dr. Jason (Zhixian) Yu and Dr. Idris Hamid
+
 This is a notepad++ plugin for ConTeXt.
 
 This plugin have 3 major functions:
